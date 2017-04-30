@@ -1,0 +1,8 @@
+ADDON_INSTALLATIONS_DB = 'addon_installations'
+ADDON_CAPABILITIES_DB = 'addon_capabilities'
+ADDON_TOKENS_DB = 'addon_tokens'
+PANEL_ATTR = '__panel'
+GLANCE_ATTR = '__glance'
+ADDON_ATTR = '__addon'
+API_ENDPOINT = 'https://api.hipchat.com/v2'
+ANTIBOT_MATCHERS = '__antibot_matchers'
