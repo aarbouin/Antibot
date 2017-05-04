@@ -1,16 +1,20 @@
+from functools import partial
+
 import requests
 from bottle import route, request, redirect, static_file
 from pyckson import parse, serialize
 from pymongo.database import Database
+from pynject import pynject
 
 from antibot.addons.addon_runner import AddOnRunnerProvider
 from antibot.addons.auth import AddOnInstallation
 from antibot.addons.descriptors import AddOnDescriptor
+from antibot.addons.glance_runner import GlanceRunner
+from antibot.addons.panel_runner import PanelRunner
 from antibot.addons.tokens import TokenProvider
 from antibot.constants import ADDON_INSTALLATIONS_DB, ADDON_CAPABILITIES_DB
 from antibot.domain.configuration import Configuration
 from antibot.storage import Storage
-from pynject import pynject
 
 
 @pynject
@@ -30,12 +34,12 @@ class AddOnInstaller:
 
         for glance in addon.glances:
             glance_runner = runner.get_glance_runner(glance)
-            route(glance_runner.glance_path)(lambda: glance_runner.run_ws())
-            route(glance_runner.icon_path)(lambda: static_file(glance.icon, self.configuration.static_dir))
+            route(glance_runner.glance_path)(partial(GlanceRunner.run_ws, glance_runner))
+            route(glance_runner.icon_path)(partial(static_file, glance.icon, self.configuration.static_dir))
 
         for panel in addon.panels:
             panel_runner = runner.get_panel_runner(panel)
-            route(panel_runner.panel_path)(lambda: panel_runner.run_ws())
+            route(panel_runner.panel_path)(partial(PanelRunner.run_ws, panel_runner))
 
         return runner.descriptor_path
 
