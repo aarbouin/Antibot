@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class GlanceStatusColor(Enum):
+class GlanceColor(Enum):
     default = 1
     success = 2
     error = 3
@@ -12,7 +12,7 @@ class GlanceStatusColor(Enum):
 
 
 class GlanceStatus:
-    def __init__(self, color: GlanceStatusColor, text: str):
+    def __init__(self, color: GlanceColor, text: str):
         self.color = color
         self.text = text
 
