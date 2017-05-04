@@ -1,7 +1,9 @@
 from functools import wraps
 
+import schedule
+
 from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels
-from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR
+from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR
 from antibot.domain.message import Message
 from antibot.flow.matchers import assign_matcher, CommandMatcher, RoomMatcher, RegexMatcher
 
@@ -64,6 +66,15 @@ def glance(name, icon):
 def panel(name):
     def decorator(f):
         setattr(f, PANEL_ATTR, PanelDescriptor(f, name))
+        return f
+
+    return decorator
+
+
+def daily(hour='00:00'):
+    def decorator(f):
+        job = schedule.every().day.at(hour)
+        setattr(f, JOB_ATTR, job)
         return f
 
     return decorator

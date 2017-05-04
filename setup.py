@@ -29,5 +29,6 @@ setup(name='Antibot',
           'pynject',
           'pyckson',
           'straight.plugin',
+          'schedule',
       ],
       )
