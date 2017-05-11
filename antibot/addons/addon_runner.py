@@ -1,20 +1,29 @@
-from antibot.addons.descriptors import AddOnDescriptor, GlanceDescriptor, PanelDescriptor
-from antibot.addons.glance_runner import GlanceRunner, GlanceRunnerProvider
-from antibot.addons.panel_runner import PanelRunnerProvider, PanelRunner
-from antibot.domain.configuration import Configuration
 from pynject import pynject
 from pynject.injector import Injector
+
+from antibot.addons.descriptors import AddOnDescriptor, GlanceDescriptor, PanelDescriptor, DialogDescriptor, \
+    WsDescriptor
+from antibot.addons.dialog_runner import DialogRunnerProvider, DialogRunner
+from antibot.addons.glance_runner import GlanceRunner, GlanceRunnerProvider
+from antibot.addons.panel_runner import PanelRunnerProvider, PanelRunner
+from antibot.addons.ws_runner import WsRunnerProvider, WsRunner
+from antibot.domain.configuration import Configuration
 
 
 class AddOnRunner:
     def __init__(self, instance, configuration: Configuration, glance_runner_provider: GlanceRunnerProvider,
-                 panel_runner_provider: PanelRunnerProvider, addon: AddOnDescriptor):
+                 panel_runner_provider: PanelRunnerProvider, dialog_runner_provider: DialogRunnerProvider,
+                 ws_runner_provider: WsRunnerProvider, addon: AddOnDescriptor):
         self.instance = instance
         self.addon = addon
         self.glances_runners = {glance.id: glance_runner_provider.get(addon, glance)
                                 for glance in addon.glances}
         self.panels_runners = {panel.id: panel_runner_provider.get(addon, panel)
                                for panel in addon.panels}
+        self.dialogs_runners = {dialog.id: dialog_runner_provider.get(addon, dialog)
+                                for dialog in addon.dialogs}
+        self.ws_runners = {ws.id: ws_runner_provider.get(addon, ws)
+                           for ws in addon.wss}
         self.configuration = configuration
 
     @property
@@ -34,11 +43,12 @@ class AddOnRunner:
                 },
                 'hipchatApiConsumer': {
                     'scopes': [
-                        'send_notification'
+                        'send_notification',
                     ]
                 },
                 'glance': [glance.descriptor for glance in self.glances_runners.values()],
-                'webPanel': [panel.descriptor for panel in self.panels_runners.values()]
+                'webPanel': [panel.descriptor for panel in self.panels_runners.values()],
+                'dialog': [dialog.descriptor for dialog in self.dialogs_runners.values()],
             }
         }
 
@@ -56,11 +66,20 @@ class AddOnRunner:
     def get_panel_runner(self, panel: PanelDescriptor) -> PanelRunner:
         return self.panels_runners[panel.id]
 
+    def get_dialog_runner(self, dialog: DialogDescriptor) -> DialogRunner:
+        return self.dialogs_runners[dialog.id]
+
+    def get_ws_runner(self, ws: WsDescriptor) -> WsRunner:
+        return self.ws_runners[ws.id]
+
 
 @pynject
 class AddOnRunnerProvider:
     def __init__(self, injector: Injector, configuration: Configuration, glance_runner_provider: GlanceRunnerProvider,
-                 panel_runner_provider: PanelRunnerProvider):
+                 panel_runner_provider: PanelRunnerProvider, dialog_runner_provider: DialogRunnerProvider,
+                 ws_runner_provider: WsRunnerProvider):
+        self.ws_runner_provider = ws_runner_provider
+        self.dialog_runner_provider = dialog_runner_provider
         self.panel_runner_provider = panel_runner_provider
         self.glance_runner_provider = glance_runner_provider
         self.configuration = configuration
@@ -70,7 +89,8 @@ class AddOnRunnerProvider:
     def get(self, addon: AddOnDescriptor) -> AddOnRunner:
         if addon.id not in self.cache:
             runner = AddOnRunner(self.injector.get_instance(addon.cls), self.configuration,
-                                 self.glance_runner_provider, self.panel_runner_provider, addon)
+                                 self.glance_runner_provider, self.panel_runner_provider, self.dialog_runner_provider,
+                                 self.ws_runner_provider, addon)
             self.cache[addon.id] = runner
             return runner
         return self.cache[addon.id]

@@ -3,14 +3,17 @@ from os.path import join
 import requests
 from bottle import abort, response
 
-from antibot.addons.auth import AuthChecker
+from antibot.addons.auth import AuthChecker, AuthResult
 from antibot.addons.descriptors import AddOnDescriptor, GlanceDescriptor
 from antibot.addons.tokens import TokenProvider
+from antibot.addons.utils import addon_method_runner
 from antibot.constants import API_ENDPOINT
 from antibot.domain.api import HipchatAuth
 from antibot.domain.configuration import Configuration
 from antibot.domain.room import Room
 from pynject import pynject, Injector
+
+from antibot.domain.user import User
 
 
 class GlanceRunner:
@@ -26,6 +29,9 @@ class GlanceRunner:
         for panel in self.addon.panels:
             if panel.name == self.glance.name:
                 self.panel_key = panel.id
+        for dialog in self.addon.dialogs:
+            if dialog.title == self.glance.name:
+                self.panel_key = dialog.id
 
     @property
     def descriptor(self):
@@ -53,13 +59,14 @@ class GlanceRunner:
         return '/{addon}/glance/{id}/icon'.format(addon=self.addon.id, id=self.glance.id)
 
     def run_ws(self):
-        if not self.auth.check_auth(self.addon):
+        auth = self.auth.check_auth(self.addon)
+        if not auth:
             abort(401)
         response.set_header('Access-Control-Allow-Origin', '*')
-        return self.run()
+        return self.run(auth.user, auth.room)
 
-    def run(self):
-        glance_view = self.glance.method(self.instance)
+    def run(self, user: User, room: Room):
+        glance_view = addon_method_runner(self.glance.method, self.instance, user, room)
 
         data = {
             'label': {
@@ -78,7 +85,7 @@ class GlanceRunner:
 
     def update(self, room: Room):
         auth = HipchatAuth(self.token_provider.get_token(self.addon, room).access_token)
-        glance = self.run()
+        glance = self.run(None, room)
         data = {
             'glance': [
                 {

@@ -20,6 +20,11 @@ class UsersRepository:
     def by_name(self, name: str) -> User:
         return self.users_by_name.get(name)
 
+    def by_id(self, id: int) -> User:
+        for user in self.users:
+            if user.api_id == id:
+                return user
+
     def get_bot_name(self) -> str:
         for user in self.users:
             if user.jid == self.configuration.jid:

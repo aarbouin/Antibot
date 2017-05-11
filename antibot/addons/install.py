@@ -9,9 +9,11 @@ from pynject import pynject
 from antibot.addons.addon_runner import AddOnRunnerProvider
 from antibot.addons.auth import AddOnInstallation
 from antibot.addons.descriptors import AddOnDescriptor
+from antibot.addons.dialog_runner import DialogRunner
 from antibot.addons.glance_runner import GlanceRunner
 from antibot.addons.panel_runner import PanelRunner
 from antibot.addons.tokens import TokenProvider
+from antibot.addons.ws_runner import WsRunner
 from antibot.constants import ADDON_INSTALLATIONS_DB, ADDON_CAPABILITIES_DB
 from antibot.domain.configuration import Configuration
 from antibot.storage import Storage
@@ -40,6 +42,14 @@ class AddOnInstaller:
         for panel in addon.panels:
             panel_runner = runner.get_panel_runner(panel)
             route(panel_runner.panel_path)(partial(PanelRunner.run_ws, panel_runner))
+
+        for dialog in addon.dialogs:
+            dialog_runner = runner.get_dialog_runner(dialog)
+            route(dialog_runner.dialog_path)(partial(DialogRunner.run_ws, dialog_runner))
+
+        for ws in addon.wss:
+            ws_runner = runner.get_ws_runner(ws)
+            route(ws_runner.ws_path, method=ws.http_method)(partial(WsRunner.run_ws, ws_runner))
 
         return runner.descriptor_path
 

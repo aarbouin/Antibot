@@ -1,11 +1,23 @@
 from functools import wraps
+from inspect import signature
+from typing import Tuple
 
 import schedule
 
-from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels
-from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR
+from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels, \
+    DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss
+from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR, DIALOG_ATTR, ACTION_ATTR, WS_ATTR, \
+    METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR
 from antibot.domain.message import Message
 from antibot.flow.matchers import assign_matcher, CommandMatcher, RoomMatcher, RegexMatcher
+
+
+def set_params_options(f):
+    for name, param in signature(f).parameters.items():
+        if name == 'user':
+            setattr(f, METHOD_HAS_USER_ATTR, True)
+        if name == 'room':
+            setattr(f, METHOD_HAS_ROOM_ATTR, True)
 
 
 def botcmd(cmd):
@@ -44,13 +56,28 @@ def addon(name, description):
     def decorator(cls):
         glances = list(find_glances(cls))
         panels = list(find_panels(cls))
-        descriptor = AddOnDescriptor(cls, name, description, list(glances), list(panels))
+        dialogs = list(find_dialogs(cls))
+        wss = list(find_wss(cls))
+        descriptor = AddOnDescriptor(cls, name, description, list(glances), list(panels), list(dialogs), list(wss))
         for glance in glances:
             setattr(glance.method, ADDON_ATTR, descriptor)
         for panel in panels:
             setattr(panel.method, ADDON_ATTR, descriptor)
+        for dialog in dialogs:
+            setattr(dialog.method, ADDON_ATTR, descriptor)
+        for ws in wss:
+            setattr(ws.method, ADDON_ATTR, descriptor)
         setattr(cls, ADDON_ATTR, descriptor)
         return cls
+
+    return decorator
+
+
+def ws(route: str, method: str = 'GET'):
+    def decorator(f):
+        setattr(f, WS_ATTR, WsDescriptor(f, route, method))
+        set_params_options(f)
+        return f
 
     return decorator
 
@@ -58,6 +85,7 @@ def addon(name, description):
 def glance(name, icon):
     def decorator(f):
         setattr(f, GLANCE_ATTR, GlanceDescriptor(f, name, icon))
+        set_params_options(f)
         return f
 
     return decorator
@@ -66,6 +94,26 @@ def glance(name, icon):
 def panel(name):
     def decorator(f):
         setattr(f, PANEL_ATTR, PanelDescriptor(f, name))
+        set_params_options(f)
+        return f
+
+    return decorator
+
+
+def dialog(title: str, size: Tuple[str, str] = None, primary: DialogButton = None, secondary: DialogButton = None):
+    def decorator(f):
+        width, height = (size[0], size[1]) if size else (None, None)
+        descriptor = DialogDescriptor(f, title, width=width, height=height, primary=primary, secondary=secondary)
+        setattr(f, DIALOG_ATTR, descriptor)
+        set_params_options(f)
+        return f
+
+    return decorator
+
+
+def action(name):
+    def decorator(f):
+        setattr(f, ACTION_ATTR, PanelDescriptor(f, name))
         return f
 
     return decorator

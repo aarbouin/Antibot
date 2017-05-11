@@ -18,6 +18,11 @@ class RoomsRepository:
     def by_jid(self, jid: str) -> Room:
         return self.rooms_by_jid.get(jid)
 
+    def by_id(self, id: int) -> Room:
+        for room in self.rooms:
+            if room.api_id == id:
+                return room
+
     def by_name(self, name: str) -> Room:
         for room in self.rooms:
             if room.name.lower() == name.lower():

@@ -1,9 +1,13 @@
 from bottle import abort, response
 
-from antibot.addons.auth import AuthChecker
+from antibot.addons.auth import AuthChecker, AuthResult
 from antibot.addons.descriptors import AddOnDescriptor, PanelDescriptor
+from antibot.addons.utils import addon_method_runner
 from antibot.domain.configuration import Configuration
 from pynject import pynject, Injector
+
+from antibot.domain.room import Room
+from antibot.domain.user import User
 
 
 class PanelRunner:
@@ -31,13 +35,14 @@ class PanelRunner:
         return '/{addon}/panel/{id}'.format(addon=self.addon.id, id=self.panel.id)
 
     def run_ws(self):
-        if not self.auth.check_auth(self.addon):
+        auth = self.auth.check_auth(self.addon)
+        if not auth:
             abort(401)
         response.set_header('Access-Control-Allow-Origin', '*')
-        return self.run()
+        return self.run(auth.user, auth.room)
 
-    def run(self):
-        return self.panel.method(self.instance)
+    def run(self, user: User, room: Room):
+        return addon_method_runner(self.panel.method, self.instance, user, room)
 
 
 @pynject

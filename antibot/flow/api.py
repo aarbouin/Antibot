@@ -1,11 +1,13 @@
+import logging
 from os.path import join
+from typing import List
+from uuid import uuid4
 
 import requests
 from pynject import pynject
-from typing import List
+from requests import HTTPError
 
-from antibot.addons.addon_runner import AddOnRunnerProvider
-from antibot.constants import GLANCE_ATTR, API_ENDPOINT, ADDON_ATTR
+from antibot.constants import API_ENDPOINT
 from antibot.domain.api import HipchatAuth
 from antibot.domain.configuration import Configuration
 from antibot.domain.room import Room
@@ -17,8 +19,7 @@ DEFAULT_PARAMS = {'max-results': 1000, 'expand': 'items'}
 
 @pynject
 class HipchatApi:
-    def __init__(self, configuration: Configuration, runner_provider: AddOnRunnerProvider):
-        self.runner_provider = runner_provider
+    def __init__(self, configuration: Configuration):
         self.jid = JID(configuration.jid)
         self.auth = HipchatAuth(configuration.api_token)
 
@@ -33,12 +34,10 @@ class HipchatApi:
     def send_html_message(self, room: Room, message: str):
         data = {
             'message_format': 'html',
-            'message': message
+            'message': message,
         }
-        requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
-
-    def update_glance(self, glance, room: Room):
-        addon_descriptor = getattr(glance, ADDON_ATTR)
-        glance_descriptor = getattr(glance, GLANCE_ATTR)
-        runner = self.runner_provider.get(addon_descriptor).get_glance_runner(glance_descriptor)
-        runner.update(room)
+        r = requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
+        try:
+            r.raise_for_status()
+        except HTTPError:
+            logging.getLogger(__name__).error(r.text)

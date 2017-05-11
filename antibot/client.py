@@ -1,6 +1,9 @@
-from pynject import pynject
 from typing import List
 
+from pynject import pynject
+
+from antibot.addons.addon_runner import AddOnRunnerProvider
+from antibot.constants import ADDON_ATTR, GLANCE_ATTR
 from antibot.domain.message import Message
 from antibot.domain.room import Room
 from antibot.domain.user import User
@@ -13,7 +16,9 @@ from antibot.xmpp.client import HipchatXmppClient
 
 @pynject
 class HipchatClient:
-    def __init__(self, xmpp: HipchatXmppClient, api: HipchatApi, rooms: RoomsRepository, quickies: QuickiesRepository):
+    def __init__(self, xmpp: HipchatXmppClient, api: HipchatApi, rooms: RoomsRepository, quickies: QuickiesRepository,
+                 runner_provider: AddOnRunnerProvider):
+        self.runner_provider = runner_provider
         self.quickies = quickies
         self.rooms = rooms
         self.xmpp = xmpp
@@ -32,8 +37,11 @@ class HipchatClient:
     def reply(self, message: Message, reply: str):
         self.send_message(message.room, reply, [message.user])
 
-    def update_glance(self, glance_method, room: Room):
-        self.api.update_glance(glance_method, room)
+    def update_glance(self, glance, room: Room):
+        addon_descriptor = getattr(glance, ADDON_ATTR)
+        glance_descriptor = getattr(glance, GLANCE_ATTR)
+        runner = self.runner_provider.get(addon_descriptor).get_glance_runner(glance_descriptor)
+        runner.update(room)
 
     def get_room(self, name) -> Room:
         return self.rooms.by_name(name)
