@@ -1,7 +1,6 @@
 import logging
 from os.path import join
 from typing import List
-from uuid import uuid4
 
 import requests
 from pynject import pynject
@@ -31,9 +30,28 @@ class HipchatApi:
         for item in requests.get(join(API_ENDPOINT, 'room'), params=DEFAULT_PARAMS, auth=self.auth).json()['items']:
             yield Room(item['xmpp_jid'], item['id'], item['name'])
 
+    def get_users_id_in_room(self, room: Room):
+        params = DEFAULT_PARAMS.copy()
+        params['include-offline'] = 'true'
+        for item in requests.get(join(API_ENDPOINT, 'room/{}/participant'.format(room.api_id)), params=params,
+                                 auth=self.auth).json()['items']:
+            print(item)
+            yield item['id']
+
     def send_html_message(self, room: Room, message: str):
         data = {
             'message_format': 'html',
+            'message': message,
+        }
+        r = requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
+        try:
+            r.raise_for_status()
+        except HTTPError:
+            logging.getLogger(__name__).error(r.text)
+
+    def send_text_message(self, room: Room, message: str):
+        data = {
+            'message_format': 'text',
             'message': message,
         }
         r = requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
