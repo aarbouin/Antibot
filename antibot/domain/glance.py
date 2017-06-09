@@ -6,7 +6,6 @@ class GlanceColor(Enum):
     success = 2
     error = 3
     current = 4
-    new = 5
     complete = 6
     moved = 7
 
