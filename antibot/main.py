@@ -4,6 +4,7 @@ from threading import Thread
 
 import bottle as bottle
 from pynject import pynject
+from pynject.injector import Injector
 
 from antibot.addons.bootstrap import AddOnBootstrap
 from antibot.flow.api import HipchatApi
@@ -12,7 +13,6 @@ from antibot.module import AntibotModule
 from antibot.provider.configuration import build_configuration
 from antibot.scheduler import Scheduler
 from antibot.xmpp.client import HipchatXmppClient
-from pynject.injector import Injector
 
 
 @pynject
@@ -38,11 +38,12 @@ def run():
     logging.getLogger("requests").setLevel(logging.DEBUG)
     parser = ArgumentParser()
     parser.add_argument('-c', '--conf-file')
+    parser.add_argument('-p', '--plugins', nargs='*', default=[])
 
     args = parser.parse_args()
 
     configuration = build_configuration(args)
-    plugins = find_plugins(configuration)
+    plugins = list(find_plugins(configuration, args.plugins))
     antibot_module = AntibotModule(configuration, plugins)
     injector = Injector(antibot_module)
 
