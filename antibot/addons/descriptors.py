@@ -1,3 +1,4 @@
+from enum import Enum
 from inspect import getmembers
 from typing import List
 
@@ -47,6 +48,11 @@ def find_dialogs(cls):
             yield getattr(method, DIALOG_ATTR)
 
 
+class ButtonPos(Enum):
+    PRIMARY = 1,
+    SECONDARY = 2
+
+
 class DialogButton:
     def __init__(self, key: str, text: str):
         self.key = key
@@ -54,7 +60,7 @@ class DialogButton:
 
 
 class DialogDescriptor:
-    def __init__(self, method: str, title: str, primary: DialogButton = None, secondary: DialogButton = None,
+    def __init__(self, method: str, title: str, primary: DialogButton = None, secondary: List[DialogButton] = None,
                  width: str = None, height: str = None):
         self.method = method
         self.title = title

@@ -29,12 +29,8 @@ class DialogRunner:
                 }
             }
         if self.dialog.secondary:
-            options['secondaryActions'] = {
-                'key': self.dialog.secondary.key,
-                'name': {
-                    'value': self.dialog.secondary.text
-                }
-            }
+            buttons = [{'key': button.key, 'name': {'value': button.text}} for button in self.dialog.secondary]
+            options['secondaryActions'] = buttons
         if self.dialog.width and self.dialog.height:
             options['size'] = {
                 'width': self.dialog.width,

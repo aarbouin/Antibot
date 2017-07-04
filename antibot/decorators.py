@@ -5,9 +5,9 @@ from typing import Tuple
 import schedule
 
 from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels, \
-    DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss
+    DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss, ButtonPos
 from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR, DIALOG_ATTR, ACTION_ATTR, WS_ATTR, \
-    METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR
+    METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, SECONDARY_BUTTONS_ATTR, PRIMARY_BUTTON_ATTR
 from antibot.domain.message import Message
 from antibot.flow.matchers import assign_matcher, CommandMatcher, RoomMatcher, RegexMatcher
 
@@ -100,12 +100,29 @@ def panel(name):
     return decorator
 
 
-def dialog(title: str, size: Tuple[str, str] = None, primary: DialogButton = None, secondary: DialogButton = None):
+def dialog(title: str, size: Tuple[str, str] = None):
     def decorator(f):
         width, height = (size[0], size[1]) if size else (None, None)
+        primary = getattr(f, PRIMARY_BUTTON_ATTR, None)
+        secondary = getattr(f, SECONDARY_BUTTONS_ATTR, [])
         descriptor = DialogDescriptor(f, title, width=width, height=height, primary=primary, secondary=secondary)
         setattr(f, DIALOG_ATTR, descriptor)
         set_params_options(f)
+        return f
+
+    return decorator
+
+
+def button(position: ButtonPos, key: str, text: str):
+    button = DialogButton(key, text)
+
+    def decorator(f):
+        if position == ButtonPos.SECONDARY:
+            buttons = getattr(f, SECONDARY_BUTTONS_ATTR, [])
+            buttons.append(button)
+            setattr(f, SECONDARY_BUTTONS_ATTR, buttons)
+        if position == ButtonPos.PRIMARY:
+            setattr(f, PRIMARY_BUTTON_ATTR, button)
         return f
 
     return decorator
