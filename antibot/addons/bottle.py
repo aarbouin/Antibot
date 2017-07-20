@@ -1,3 +1,5 @@
+from json import dumps
+
 import bottle
 
 TEMPLATE_UTILS = """
@@ -32,3 +34,7 @@ TEMPLATE_UTILS = """
 def template(file, *args, **kwargs):
     kwargs['hipchatTools'] = TEMPLATE_UTILS
     return bottle.template(file, *args, **kwargs)
+
+
+def jsify(object):
+    return dumps(object).replace('\'', '\\\'')
