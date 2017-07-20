@@ -30,6 +30,7 @@ class Main:
             logging.getLogger(__name__).info('route for plugin `{}` is {}'.format(id, route))
         thread = Thread(target=self.client.run)
         thread.start()
+        bottle.DEBUG = True
         bottle.run(port=5001)
 
 

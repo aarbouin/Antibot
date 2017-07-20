@@ -5,7 +5,7 @@ from typing import Tuple
 import schedule
 
 from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels, \
-    DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss, ButtonPos
+    DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss, ButtonPos, ActionDescriptor
 from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR, DIALOG_ATTR, ACTION_ATTR, WS_ATTR, \
     METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, SECONDARY_BUTTONS_ATTR, PRIMARY_BUTTON_ATTR
 from antibot.domain.message import Message
@@ -128,9 +128,9 @@ def button(position: ButtonPos, key: str, text: str):
     return decorator
 
 
-def action(name):
+def message_action(name):
     def decorator(f):
-        setattr(f, ACTION_ATTR, PanelDescriptor(f, name))
+        setattr(f, ACTION_ATTR, ActionDescriptor(f, name))
         return f
 
     return decorator
