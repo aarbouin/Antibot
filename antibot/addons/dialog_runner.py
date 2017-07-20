@@ -28,7 +28,7 @@ class DialogRunner:
                     'value': self.dialog.primary.text
                 }
             }
-        if self.dialog.secondary:
+        if self.dialog.secondary is not None:
             buttons = [{'key': button.key, 'name': {'value': button.text}} for button in self.dialog.secondary]
             options['secondaryActions'] = buttons
         if self.dialog.width and self.dialog.height:
