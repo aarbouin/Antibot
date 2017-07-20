@@ -46,6 +46,12 @@ class HipchatClient:
         runner = self.runner_provider.get(addon_descriptor).get_glance_runner(glance_descriptor)
         runner.update(room)
 
+    def update_glance_for_user(self, glance, user: User, room: Room):
+        addon_descriptor = getattr(glance, ADDON_ATTR)
+        glance_descriptor = getattr(glance, GLANCE_ATTR)
+        runner = self.runner_provider.get(addon_descriptor).get_glance_runner(glance_descriptor)
+        runner.update(room, user)
+
     def get_room(self, name) -> Room:
         return self.rooms.by_name(name)
 

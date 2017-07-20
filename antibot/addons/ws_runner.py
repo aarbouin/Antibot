@@ -25,15 +25,15 @@ class WsRunner:
     def ws_path(self) -> str:
         return self.ws.route
 
-    def run_ws(self):
+    def run_ws(self, **kwargs):
         auth = self.auth.check_auth(self.addon)
         if not auth:
             abort(401)
         response.set_header('Access-Control-Allow-Origin', '*')
-        return self.run(auth.user, auth.room)
+        return self.run(auth.user, auth.room, kwargs)
 
-    def run(self, user: User, room: Room):
-        return addon_method_runner(self.ws.method, self.instance, user, room)
+    def run(self, user: User, room: Room, ws_params: dict = None):
+        return addon_method_runner(self.ws.method, self.instance, user, room, ws_params)
 
 
 @pynject

@@ -2,8 +2,9 @@ from os.path import join
 
 import requests
 from bottle import abort, response
+from pynject import pynject, Injector
 
-from antibot.addons.auth import AuthChecker, AuthResult
+from antibot.addons.auth import AuthChecker
 from antibot.addons.descriptors import AddOnDescriptor, GlanceDescriptor
 from antibot.addons.tokens import TokenProvider
 from antibot.addons.utils import addon_method_runner
@@ -11,8 +12,6 @@ from antibot.constants import API_ENDPOINT
 from antibot.domain.api import HipchatAuth
 from antibot.domain.configuration import Configuration
 from antibot.domain.room import Room
-from pynject import pynject, Injector
-
 from antibot.domain.user import User
 
 
@@ -83,9 +82,9 @@ class GlanceRunner:
             }
         return data
 
-    def update(self, room: Room):
+    def update(self, room: Room, user: User = None):
         auth = HipchatAuth(self.token_provider.get_token(self.addon, room).access_token)
-        glance = self.run(None, room)
+        glance = self.run(user, room)
         data = {
             'glance': [
                 {
@@ -94,7 +93,11 @@ class GlanceRunner:
                 }
             ]
         }
-        requests.post(join(API_ENDPOINT, 'addon/ui/room/{}'.format(room.api_id)), json=data, auth=auth)
+        if user:
+            route = 'addon/ui/room/{}/user/{}'.format(room.api_id, user.api_id)
+        else:
+            route = 'addon/ui/room/{}'.format(room.api_id)
+        requests.post(join(API_ENDPOINT, route), json=data, auth=auth)
 
 
 @pynject
