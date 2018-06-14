@@ -37,6 +37,9 @@ class HipchatClient:
     def send_text_message(self, room: Room, message: str):
         self.api.send_text_message(room, message)
 
+    def send_private_message(self, user: User, message: str):
+        self.api.send_private_message(user, message)
+
     def reply(self, message: Message, reply: str):
         self.send_message(message.room, reply, [message.user])
 

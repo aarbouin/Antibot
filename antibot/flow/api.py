@@ -61,3 +61,15 @@ class HipchatApi:
             r.raise_for_status()
         except HTTPError:
             logging.getLogger(__name__).error(r.text)
+
+    def send_private_message(self, user: User, message: str):
+        data = {
+            'message_format': 'text',
+            'message': message,
+            'notify': True
+        }
+        r = requests.post(join(API_ENDPOINT, 'user/{}/message'.format(user.api_id)), json=data, auth=self.auth)
+        try:
+            r.raise_for_status()
+        except HTTPError:
+            logging.getLogger(__name__).error(r.text)

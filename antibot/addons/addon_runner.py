@@ -44,6 +44,7 @@ class AddOnRunner:
                 'hipchatApiConsumer': {
                     'scopes': [
                         'send_notification',
+                        'send_message'
                     ]
                 },
                 'glance': [glance.descriptor for glance in self.glances_runners.values()],
