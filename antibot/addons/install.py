@@ -51,6 +51,8 @@ class AddOnInstaller:
             ws_runner = runner.get_ws_runner(ws)
             route(ws_runner.ws_path, method=ws.http_method)(partial(WsRunner.run_ws, ws_runner))
 
+        route('/assets/<path:path>')(lambda path: static_file(path, self.configuration.static_dir))
+
         return runner.descriptor_path
 
     def on_installed(self, addon: AddOnDescriptor):
