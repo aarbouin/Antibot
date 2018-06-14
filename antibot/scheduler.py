@@ -5,7 +5,7 @@ from time import sleep
 import schedule
 from pynject import Injector, pynject
 
-from antibot.constants import JOB_ATTR
+from antibot.constants import JOB_ATTR_DAILY
 from antibot.flow.plugins import PluginsCollection
 
 
@@ -16,11 +16,11 @@ class SchedulerWatch:
             sleep(5)
 
 
-def find_jobs(cls):
+def find_daily_jobs(cls):
     for name, method in getmembers(cls):
-        job = getattr(method, JOB_ATTR, None)
-        if job is not None:
-            yield method, job
+        hour = getattr(method, JOB_ATTR_DAILY, None)
+        if hour is not None:
+            yield method, hour
 
 
 @pynject
@@ -32,8 +32,8 @@ class Scheduler:
 
     def bootstrap(self):
         for plugin in self.plugins.plugins:
-            for method, job in find_jobs(plugin):
-                job.do(self.run, plugin, method)
+            for method, hour in find_daily_jobs(plugin):
+                schedule.every().day.at(hour).do(self.run, plugin, method)
         self.watch_thread.start()
 
     def run(self, cls, method):

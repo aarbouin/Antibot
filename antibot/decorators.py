@@ -2,11 +2,9 @@ from functools import wraps
 from inspect import signature
 from typing import Tuple
 
-import schedule
-
 from antibot.addons.descriptors import find_glances, AddOnDescriptor, GlanceDescriptor, PanelDescriptor, find_panels, \
     DialogDescriptor, find_dialogs, DialogButton, WsDescriptor, find_wss, ButtonPos, ActionDescriptor
-from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR, DIALOG_ATTR, ACTION_ATTR, WS_ATTR, \
+from antibot.constants import GLANCE_ATTR, ADDON_ATTR, PANEL_ATTR, JOB_ATTR_DAILY, DIALOG_ATTR, ACTION_ATTR, WS_ATTR, \
     METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, SECONDARY_BUTTONS_ATTR, PRIMARY_BUTTON_ATTR
 from antibot.domain.message import Message
 from antibot.flow.matchers import assign_matcher, CommandMatcher, RoomMatcher, RegexMatcher
@@ -138,8 +136,7 @@ def message_action(name):
 
 def daily(hour='00:00'):
     def decorator(f):
-        job = schedule.every().day.at(hour)
-        setattr(f, JOB_ATTR, job)
+        setattr(f, JOB_ATTR_DAILY, hour)
         return f
 
     return decorator
