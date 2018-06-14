@@ -42,6 +42,7 @@ class HipchatApi:
         data = {
             'message_format': 'html',
             'message': message,
+            'notify': True,
         }
         r = requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
         try:
@@ -53,6 +54,7 @@ class HipchatApi:
         data = {
             'message_format': 'text',
             'message': message,
+            'notify': True,
         }
         r = requests.post(join(API_ENDPOINT, 'room/{}/notification'.format(room.api_id)), json=data, auth=self.auth)
         try:
