@@ -1,5 +1,4 @@
 class User:
-    def __init__(self, id, name, display_name):
+    def __init__(self, id, display_name):
         self.id = id
-        self.name = name
         self.display_name = display_name

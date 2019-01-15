@@ -108,7 +108,7 @@ class MenuParser:
         self.box_type = None
 
     def find_soupe(self, line: str):
-        
+        pass
 
     def find_dessert(self, line: str):
         if line.startswith('Yaourts'):

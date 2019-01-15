@@ -1,6 +1,7 @@
-from decorator import contextmanager
-from pymongo.database import Database
+from contextlib import contextmanager
 
+from pyckson import parse
+from pymongo.database import Database
 from pynject import pynject
 
 
@@ -9,9 +10,11 @@ class Storage:
     def __init__(self, name: str, mongo: Database):
         self.collection = mongo[name]
 
-    def get(self, key, default=None):
+    def get(self, key, default=None, cls=None):
         result = self.collection.find_one({'_id': key})
-        return result['value'] if result is not None else default
+        result = result['value'] if result is not None else default
+        result = parse(cls, result) if cls is not None else result
+        return result
 
     def save(self, key, value):
         self.collection.update({'_id': key}, {'_id': key, 'value': value}, upsert=True)

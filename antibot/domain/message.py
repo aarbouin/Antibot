@@ -10,6 +10,6 @@ class MessageType(Enum):
 
 @no_camel_case
 class Message:
-    def __init__(self, text: str, response_type: MessageType):
+    def __init__(self, text: str, response_type: MessageType = MessageType.in_channel):
         self.text = text
         self.response_type = response_type
