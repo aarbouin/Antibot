@@ -1,7 +1,5 @@
 class User:
-    def __init__(self, jid, api_id, name, mention, title):
-        self.jid = jid
-        self.api_id = api_id
+    def __init__(self, id, name, display_name):
+        self.id = id
         self.name = name
-        self.mention = mention
-        self.title = title
+        self.display_name = display_name
