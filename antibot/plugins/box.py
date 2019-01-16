@@ -4,6 +4,7 @@ from antibot.decorators import command
 from antibot.domain.message import Message
 from antibot.domain.plugin import AntibotPlugin
 from antibot.domain.user import User
+from antibot.plugins.menu.provider import MenuProvider
 from antibot.storage import StorageFactory
 
 
@@ -28,9 +29,23 @@ class PointCalculator:
 
 @pynject
 class Box(AntibotPlugin):
-    def __init__(self, storage: StorageFactory):
+    def __init__(self, menu_provider: MenuProvider):
         super().__init__('Box')
+        self.menu_provider = menu_provider
 
     @command('/box/menu')
     def display_menu(self, user: User):
-        return Message('coucou {}'.format(user.display_name))
+        menu = self.menu_provider.get()
+        date = self.menu_provider.date
+        text = '*Menu du {}*\n'.format(date)
+        for box in menu.boxes:
+            text += '* {} : {} - {}€\n'.format(box.box_type.value, box.name, box.price)
+        if menu.soup is not None:
+            text += '* Soupe : {} - {}€'.format(menu.soup.name, menu.soup.price)
+        text += '\n*Desserts :*\n'
+        for dessert in menu.desserts:
+            if len(dessert.flavors) > 0:
+                text += '* {} ({})\n'.format(dessert.name, ', '.join(dessert.flavors))
+            else:
+                text += '* {}\n'.format(dessert.name)
+        return Message(text)

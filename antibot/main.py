@@ -30,8 +30,6 @@ def run():
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("requests").setLevel(logging.DEBUG)
 
-    parser = ArgumentParser()
-
     configuration = Configuration(os.environ['VERIFICATION_TOKEN'],
                                   os.environ['SLACK_API_TOKEN'],
                                   os.environ.get('VHOST', 'http://localhost:5001'))
