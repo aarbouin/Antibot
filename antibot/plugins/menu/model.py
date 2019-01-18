@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Iterator
 
 from autovalue import autovalue
 
@@ -20,6 +20,9 @@ class Box:
         self.name = name
         self.price = price
 
+    def __str__(self):
+        return '{} : {} - {}€'.format(self.box_type.value, self.name, self.price)
+
 
 @autovalue
 class Soup:
@@ -27,11 +30,17 @@ class Soup:
         self.name = name
         self.price = price
 
+    def __str__(self):
+        return '{} : {} - {}€'.format('Soupe', self.name, self.price)
+
 
 @autovalue
 class Salad:
     def __init__(self, price: float):
         self.price = price
+
+    def __str__(self):
+        return '{} - {}€'.format('Salade Verte', self.price)
 
 
 @autovalue
@@ -42,11 +51,32 @@ class Cheese:
 
 
 @autovalue
+class DessertWithFlavor:
+    def __init__(self, name: str, flavor: Optional[str], price: float):
+        self.name = name
+        self.flavor = flavor
+        self.price = price
+
+    def __str__(self):
+        if self.flavor is None:
+            return self.name
+        else:
+            return '{} {}'.format(self.name, self.flavor)
+
+
+@autovalue
 class Dessert:
     def __init__(self, name: str, flavors: List[str], price: float):
         self.name = name
         self.flavors = flavors
         self.price = price
+
+    def with_flavor(self, flavor: Optional[str]):
+        return DessertWithFlavor(self.name, flavor, self.price)
+
+    def iter_flavors(self) -> Iterator[DessertWithFlavor]:
+        for flavor in self.flavors:
+            yield self.with_flavor(flavor)
 
 
 @autovalue
@@ -66,6 +96,13 @@ class Menu:
         self.cheeses = cheeses
         self.desserts = desserts
         self.drinks = drinks
+
+    def all_desserts(self) -> Iterator[DessertWithFlavor]:
+        for dessert in self.desserts:
+            if len(dessert.flavors) > 0:
+                yield from dessert.iter_flavors()
+            else:
+                yield dessert.with_flavor(None)
 
 
 class MenuBuilder:
