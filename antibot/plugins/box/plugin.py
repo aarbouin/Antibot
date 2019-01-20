@@ -4,32 +4,33 @@ from typing import Optional, List
 
 from pynject import pynject
 
-from antibot.slack.api import SlackApi
 from antibot.decorators import command, callback
-from antibot.slack.callback import CallbackAction
-from antibot.slack.channel import Channel
-from antibot.slack.message import Message, Action, Attachment, MessageType
+from antibot.model.message import SlackMessage
 from antibot.model.plugin import AntibotPlugin
 from antibot.model.user import User
 from antibot.plugins.box.actions import OrderAction
-from antibot.plugins.box.commands import CommandMessagesRepository, CommandMessage
 from antibot.plugins.box.menu.model import Box, DessertWithFlavor
 from antibot.plugins.box.menu.provider import MenuProvider
 from antibot.plugins.box.orders import OrderRepository, Order
-from antibot.plugins.box.tools import today
 from antibot.plugins.box.ui import BoxUi
+from antibot.repository.messages import MessagesRepository
+from antibot.slack.api import SlackApi
+from antibot.slack.callback import CallbackAction
+from antibot.slack.channel import Channel
+from antibot.slack.message import Message, Action, Attachment, MessageType
+from antibot.tools import today
 
 
 @pynject
 class Box(AntibotPlugin):
     def __init__(self, menu_provider: MenuProvider, orders: OrderRepository, api: SlackApi, ui: BoxUi,
-                 cmd_messages: CommandMessagesRepository):
+                 messages: MessagesRepository):
         super().__init__('Box')
         self.menu_provider = menu_provider
         self.orders = orders
         self.api = api
         self.ui = ui
-        self.cmd_messages = cmd_messages
+        self.messages = messages
 
     @property
     def menu(self):
@@ -99,7 +100,7 @@ class Box(AntibotPlugin):
                        attachments=self.ui.create_order_attachments(self.menu, order))
 
     def complete_order(self, channel: Channel, user: User, new_order: bool):
-        cmds = list(self.cmd_messages.find_all())
+        cmds = list(self.messages.find_all())
         if len(cmds) == 0:
             cmds = [self.display_orders(channel)]
         link = self.api.get_permalink(channel.id, cmds[-1].timestamp)
@@ -110,17 +111,17 @@ class Box(AntibotPlugin):
         self.api.post_message(channel.id, message.format(user.display_name, link))
         self.update_displayed_orders(channel)
 
-    def display_orders(self, channel: Channel) -> CommandMessage:
+    def display_orders(self, channel: Channel) -> SlackMessage:
         orders = list(self.orders.find_all(today()))
         timestamp = self.api.post_message(channel.id, self.ui.orders_text(orders))
-        return self.cmd_messages.create(timestamp)
+        return self.messages.create(SlackMessage.create_today('orders', timestamp))
 
     def update_displayed_orders(self, channel: Channel):
         orders = list(self.orders.find_all(today()))
-        for cmd_message in self.cmd_messages.find_all():
+        for cmd_message in self.messages.find_all():
             new_ts = self.api.update_message(channel.id, cmd_message.timestamp,
                                              Message(text=self.ui.orders_text(orders)))
-            self.cmd_messages.update_timestamp(cmd_message._id, new_ts)
+            self.messages.update_timestamp(cmd_message._id, new_ts)
 
     def display_order(self, order: Order) -> str:
         items = order.boxes + order.desserts

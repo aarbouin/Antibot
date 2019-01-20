@@ -9,8 +9,7 @@ from pynject import pynject
 
 from antibot.model.user import User
 from antibot.plugins.box.menu.model import Box, DessertWithFlavor
-from antibot.plugins.box.tools import today
-from antibot.tools import updater
+from antibot.tools import updater, today
 
 
 @autovalue
