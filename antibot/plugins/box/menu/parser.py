@@ -3,7 +3,7 @@ from enum import Enum
 
 from pynject import pynject
 
-from antibot.plugins.menu.model import BoxType, Box, MenuBuilder, Soup, Salad, Cheese, Dessert, Drink, Menu
+from antibot.plugins.box.menu.model import BoxType, Box, MenuBuilder, Soup, Salad, Cheese, Dessert, Drink, Menu
 
 box_type_pattern = re.compile(r'^(NOUVEAU : )?Box\s+([\w\s]+)\s*([0-9\(\)]*)?\s*:\s*([0-9.]+) ?€', flags=re.IGNORECASE)
 box_soupe_pattern = re.compile(r'Soupe\s*:\s*([0-9.]+) ?€', flags=re.IGNORECASE)

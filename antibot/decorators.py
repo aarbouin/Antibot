@@ -2,7 +2,7 @@ from inspect import signature
 
 from antibot.addons.descriptor import CommandDescriptor, CallbackDescriptor
 from antibot.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, CMD_ATTR, JOB_ATTR_DAILY, CALLBACK_ATTR, \
-    METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR
+    METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, METHOD_HAS_CHANNEL_ATTR
 
 
 def set_params_options(f):
@@ -15,6 +15,8 @@ def set_params_options(f):
             setattr(f, METHOD_HAS_CALLBACK_ID_ATTR, True)
         if name == 'actions':
             setattr(f, METHOD_HAS_ACTIONS_ATTR, True)
+        if name == 'channel':
+            setattr(f, METHOD_HAS_CHANNEL_ATTR, True)
 
 
 def command(route):

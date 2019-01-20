@@ -3,7 +3,9 @@ from pynject import singleton, pynject
 from slackclient import SlackClient
 
 from antibot.api.user import Profile
+from antibot.domain.channel import Channel
 from antibot.domain.configuration import Configuration
+from antibot.domain.message import Message
 from antibot.domain.user import User
 
 
@@ -26,3 +28,21 @@ class SlackApi:
         result = self.client.api_call('users.profile.get', user_id=user_id)
         profile = parse(Profile, result['profile'])
         return User(user_id, profile.display_name)
+
+    def get_channel(self, channel_id) -> Channel:
+        result = self.client.api_call('channels.info', channel=channel_id)
+        channel = parse(Channel, result['channel'])
+        return channel
+
+    def post_message(self, channel_id: str, text: str) -> str:
+        result = self.client.api_call('chat.postMessage', channel=channel_id, text=text)
+        return result['ts']
+
+    def get_permalink(self, channel_id: str, timestamp: str) -> str:
+        result = self.client.api_call('chat.getPermalink', channel=channel_id, message_ts=timestamp)
+        return result['permalink']
+
+    def update_message(self, channel_id: str, timestamp: str, message: Message) -> str:
+        result = self.client.api_call('chat.update', channel=channel_id, ts=timestamp,
+                                      text=message.text, attachments=message.attachments)
+        return result['ts']

@@ -5,8 +5,8 @@ import requests
 from bs4 import BeautifulSoup
 from pynject import pynject
 
-from antibot.plugins.menu.model import Menu
-from antibot.plugins.menu.parser import MenuParser
+from antibot.plugins.box.menu.model import Menu
+from antibot.plugins.box.menu.parser import MenuParser
 
 
 @pynject

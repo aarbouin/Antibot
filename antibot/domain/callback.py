@@ -11,6 +11,13 @@ class CallbackUser:
 
 
 @no_camel_case
+class CallbackChannel:
+    def __init__(self, id: str, name: str):
+        self.id = id
+        self.name = name
+
+
+@no_camel_case
 class SelectedOption:
     def __init__(self, value: str):
         self.value = value
@@ -25,7 +32,9 @@ class CallbackAction:
 
 @no_camel_case
 class InteractiveMessage:
-    def __init__(self, callback_id: str, user: CallbackUser, actions: List[CallbackAction] = None):
+    def __init__(self, callback_id: str, user: CallbackUser, channel: CallbackChannel,
+                 actions: List[CallbackAction] = None):
         self.callback_id = callback_id
         self.user = user
+        self.channel = channel
         self.actions = actions

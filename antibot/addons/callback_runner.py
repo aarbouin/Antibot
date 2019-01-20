@@ -7,8 +7,10 @@ from pynject import Injector, pynject
 
 from antibot.addons.descriptor import PluginCallbackDescriptor
 from antibot.api.client import SlackApi
-from antibot.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR
+from antibot.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, \
+    METHOD_HAS_CHANNEL_ATTR
 from antibot.domain.callback import InteractiveMessage
+from antibot.domain.channel import Channel
 from antibot.domain.message import Message
 
 
@@ -40,6 +42,9 @@ class CallbackRunner:
                 kwargs['user'] = user
             if getattr(callback.method, METHOD_HAS_ACTIONS_ATTR, False):
                 kwargs['actions'] = message.actions
+            if getattr(callback.method, METHOD_HAS_CHANNEL_ATTR, False):
+                channel = Channel(message.channel.id, message.channel.name)
+                kwargs['channel'] = channel
 
             reply = callback.method(instance, **kwargs)
             if isinstance(reply, Message):
