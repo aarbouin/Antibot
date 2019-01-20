@@ -92,6 +92,7 @@ class Box(AntibotPlugin):
                 self.complete_order(channel, user, new_order)
             if action.name == OrderAction.order_cancel:
                 self.orders.delete(order._id)
+                self.points.update(order.user, -1 * order.points_given)
                 return Message(delete_original=True)
             if action.name == OrderAction.order_edit:
                 order = order.update(in_edition=True)
