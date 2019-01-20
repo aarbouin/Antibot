@@ -5,8 +5,8 @@ from time import sleep
 import schedule
 from pynject import Injector, pynject
 
-from antibot.constants import JOB_ATTR_DAILY
-from antibot.flow.plugins import PluginsCollection
+from antibot.backend.constants import JOB_ATTR_DAILY
+from antibot.backend.plugins import PluginsCollection
 
 
 class SchedulerWatch:

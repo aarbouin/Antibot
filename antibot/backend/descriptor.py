@@ -1,7 +1,7 @@
 from inspect import getmembers
 from typing import Iterator
 
-from antibot.constants import CMD_ATTR, CALLBACK_ATTR
+from antibot.backend.constants import CMD_ATTR, CALLBACK_ATTR
 
 
 class CommandDescriptor:

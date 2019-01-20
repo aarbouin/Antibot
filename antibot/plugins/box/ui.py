@@ -1,6 +1,6 @@
 from typing import List
 
-from antibot.domain.message import Option, Action, Attachment, OptionGroup, ActionStyle, Confirmation
+from antibot.slack.message import Option, Action, Attachment, OptionGroup, ActionStyle, Confirmation
 from antibot.plugins.box.actions import OrderAction
 from antibot.plugins.box.menu.model import Menu
 from antibot.plugins.box.orders import Order

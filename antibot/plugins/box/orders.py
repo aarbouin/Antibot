@@ -7,7 +7,7 @@ from pyckson import rename, serialize, parse
 from pymongo.database import Database
 from pynject import pynject
 
-from antibot.domain.user import User
+from antibot.model.user import User
 from antibot.plugins.box.menu.model import Box, DessertWithFlavor
 from antibot.plugins.box.tools import today
 from antibot.tools import updater

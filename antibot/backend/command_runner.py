@@ -4,10 +4,10 @@ from bottle import request
 from pyckson import serialize
 from pynject import Injector, pynject
 
-from antibot.api.client import SlackApi
-from antibot.constants import METHOD_HAS_USER_ATTR
-from antibot.domain.message import Message
-from antibot.domain.plugin import AntibotPlugin
+from antibot.slack.api import SlackApi
+from antibot.backend.constants import METHOD_HAS_USER_ATTR
+from antibot.slack.message import Message
+from antibot.model.plugin import AntibotPlugin
 
 
 @pynject

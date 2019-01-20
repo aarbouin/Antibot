@@ -3,9 +3,9 @@ from pymongo.mongo_client import MongoClient
 from pynject import Module
 from slackclient import SlackClient
 
-from antibot.api.client import SlackClientProvider
-from antibot.domain.configuration import Configuration
-from antibot.flow.plugins import PluginsCollection
+from antibot.slack.api import SlackClientProvider
+from antibot.model.configuration import Configuration
+from antibot.backend.plugins import PluginsCollection
 
 
 class AntibotModule(Module):

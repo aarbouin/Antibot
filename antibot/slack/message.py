@@ -34,6 +34,7 @@ class ActionStyle(Enum):
     danger = 'danger'
 
 
+@no_camel_case
 class Confirmation:
     def __init__(self, text: str, title: Optional[str] = None, ok_text: Optional[str] = None,
                  dismiss_text: Optional[str] = None):

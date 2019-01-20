@@ -2,11 +2,11 @@ from pyckson import parse
 from pynject import singleton, pynject
 from slackclient import SlackClient
 
-from antibot.api.user import Profile
-from antibot.domain.channel import Channel
-from antibot.domain.configuration import Configuration
-from antibot.domain.message import Message
-from antibot.domain.user import User
+from antibot.slack.user import Profile
+from antibot.slack.channel import Channel
+from antibot.model.configuration import Configuration
+from antibot.slack.message import Message
+from antibot.model.user import User
 
 
 @pynject

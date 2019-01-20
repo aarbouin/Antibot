@@ -5,8 +5,8 @@ import bottle as bottle
 from pynject import pynject
 from pynject.injector import Injector
 
-from antibot.addons.bootstrap import AddOnBootstrap
-from antibot.domain.configuration import Configuration
+from antibot.backend.bootstrap import AddOnBootstrap
+from antibot.model.configuration import Configuration
 from antibot.module import AntibotModule
 from antibot.plugins.box.plugin import Box
 from antibot.scheduler import Scheduler

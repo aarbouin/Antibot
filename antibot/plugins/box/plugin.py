@@ -4,13 +4,13 @@ from typing import Optional, List
 
 from pynject import pynject
 
-from antibot.api.client import SlackApi
+from antibot.slack.api import SlackApi
 from antibot.decorators import command, callback
-from antibot.domain.callback import CallbackAction
-from antibot.domain.channel import Channel
-from antibot.domain.message import Message, Action, Attachment, MessageType
-from antibot.domain.plugin import AntibotPlugin
-from antibot.domain.user import User
+from antibot.slack.callback import CallbackAction
+from antibot.slack.channel import Channel
+from antibot.slack.message import Message, Action, Attachment, MessageType
+from antibot.model.plugin import AntibotPlugin
+from antibot.model.user import User
 from antibot.plugins.box.actions import OrderAction
 from antibot.plugins.box.commands import CommandMessagesRepository, CommandMessage
 from antibot.plugins.box.menu.model import Box, DessertWithFlavor

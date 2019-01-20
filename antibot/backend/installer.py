@@ -5,11 +5,11 @@ from typing import Type
 from bottle import route
 from pynject import pynject
 
-from antibot.addons.callback_runner import CallbackRunner
-from antibot.addons.command_runner import CommandRunner
-from antibot.addons.descriptor import find_commands, find_callbacks, PluginCallbackDescriptor
-from antibot.domain.configuration import Configuration
-from antibot.domain.plugin import AntibotPlugin
+from antibot.backend.callback_runner import CallbackRunner
+from antibot.backend.command_runner import CommandRunner
+from antibot.backend.descriptor import find_commands, find_callbacks, PluginCallbackDescriptor
+from antibot.model.configuration import Configuration
+from antibot.model.plugin import AntibotPlugin
 
 
 @pynject

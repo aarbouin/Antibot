@@ -1,7 +1,7 @@
 from inspect import signature
 
-from antibot.addons.descriptor import CommandDescriptor, CallbackDescriptor
-from antibot.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, CMD_ATTR, JOB_ATTR_DAILY, CALLBACK_ATTR, \
+from antibot.backend.descriptor import CommandDescriptor, CallbackDescriptor
+from antibot.backend.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, CMD_ATTR, JOB_ATTR_DAILY, CALLBACK_ATTR, \
     METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, METHOD_HAS_CHANNEL_ATTR
 
 

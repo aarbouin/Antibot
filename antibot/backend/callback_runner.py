@@ -1,17 +1,16 @@
-import json
 from typing import Iterator
 
 from bottle import request
 from pyckson import loads, serialize
 from pynject import Injector, pynject
 
-from antibot.addons.descriptor import PluginCallbackDescriptor
-from antibot.api.client import SlackApi
-from antibot.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, \
+from antibot.backend.descriptor import PluginCallbackDescriptor
+from antibot.slack.api import SlackApi
+from antibot.backend.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, \
     METHOD_HAS_CHANNEL_ATTR
-from antibot.domain.callback import InteractiveMessage
-from antibot.domain.channel import Channel
-from antibot.domain.message import Message
+from antibot.slack.callback import InteractiveMessage
+from antibot.slack.channel import Channel
+from antibot.slack.message import Message
 
 
 @pynject

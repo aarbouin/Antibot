@@ -1,6 +1,6 @@
 from pynject import pynject, singleton
 
-from antibot.api.client import SlackApi
+from antibot.slack.api import SlackApi
 
 
 @pynject

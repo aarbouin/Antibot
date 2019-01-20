@@ -2,8 +2,8 @@ import logging
 
 from pynject import pynject, singleton
 
-from antibot.addons.installer import PluginInstaller
-from antibot.flow.plugins import PluginsCollection
+from antibot.backend.installer import PluginInstaller
+from antibot.backend.plugins import PluginsCollection
 
 
 @pynject
