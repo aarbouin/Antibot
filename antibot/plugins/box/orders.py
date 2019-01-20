@@ -17,7 +17,7 @@ from antibot.tools import updater, today
 @updater
 class Order:
     def __init__(self, _id: str, user: User, date: datetime, complete: bool = False, in_edition: bool = True,
-                 boxes: List[Box] = None, desserts: List[DessertWithFlavor] = None):
+                 boxes: List[Box] = None, desserts: List[DessertWithFlavor] = None, points_given: int = 0):
         self._id = _id
         self.user = user
         self.date = date
@@ -25,6 +25,7 @@ class Order:
         self.in_edition = in_edition
         self.boxes = boxes or []
         self.desserts = desserts or []
+        self.points_given = points_given
 
     def all_items(self):
         return self.boxes + self.desserts

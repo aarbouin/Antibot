@@ -19,4 +19,8 @@ def updater(cls):
 
 
 def today() -> datetime:
-    return arrow.utcnow().replace(hour=0, minute=0, second=0, microsecond=0).datetime
+    return arrow.utcnow().floor('day').datetime
+
+
+def yesterday() -> datetime:
+    return arrow.utcnow().floor('day').shift(days=-1).datetime

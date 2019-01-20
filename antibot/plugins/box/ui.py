@@ -1,9 +1,10 @@
 from typing import List
 
-from antibot.slack.message import Option, Action, Attachment, OptionGroup, ActionStyle, Confirmation
-from antibot.plugins.box.actions import OrderAction
+from antibot.model.user import User
+from antibot.plugins.box.actions import OrderAction, PointsAction
 from antibot.plugins.box.menu.model import Menu
 from antibot.plugins.box.orders import Order
+from antibot.slack.message import Option, Action, Attachment, OptionGroup, ActionStyle, Confirmation
 
 
 class BoxUi:
@@ -38,7 +39,7 @@ class BoxUi:
         edit_button = Action.button(OrderAction.order_edit, 'Modify', 'order_edit', ActionStyle.default)
         cancel_button_confirm = Action.button(OrderAction.order_cancel, 'Cancel', 'order_cancel', ActionStyle.danger,
                                               confirm=Confirmation('Really ?'))
-        dismiss_button = Action.button('dismiss', 'Dismiss', 'dismiss')
+        dismiss_button = Action.button(OrderAction.dismiss, 'Dismiss', 'dismiss')
         main_actions = []
         if not order.in_edition:
             main_actions.append(edit_button)
@@ -68,3 +69,14 @@ class BoxUi:
             messages.append(text)
         message = '----------\n'.join(messages)
         return message
+
+    def create_points_attachment(self, pref_user: User) -> List[Attachment]:
+        free_box_button = Action.button(PointsAction.free_box, 'Give a free box', 'free_box', ActionStyle.primary,
+                                        confirm=Confirmation(
+                                            text='Give a free box to {}'.format(pref_user.display_name),
+                                            title='Free Box'
+                                        ))
+        dismiss_button = Action.button(PointsAction.dismiss, 'Dismiss', 'dismiss')
+
+        attachment = Attachment('points_actions', actions=[free_box_button, dismiss_button], fallback='Free box')
+        return [attachment]

@@ -7,3 +7,8 @@ class OrderAction:
     order_cancel = 'order_cancel'
     order_edit = 'order_edit'
     dismiss = 'dismiss'
+
+
+class PointsAction:
+    free_box = 'free_box'
+    dismiss = 'dismiss'
