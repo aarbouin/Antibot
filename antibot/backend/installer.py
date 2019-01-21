@@ -1,5 +1,6 @@
 import logging
 import re
+from functools import partial
 from typing import Type
 
 from bottle import route
@@ -22,7 +23,8 @@ class PluginInstaller:
     def install_plugin(self, plugin: Type[AntibotPlugin]):
         for command in find_commands(plugin):
             logging.getLogger(__name__).info('Installing command {}{}'.format(self.configuration.vhost, command.route))
-            route(command.route, method='POST')(lambda: self.cmd_runner.run_command(command.method, plugin))
+            route(command.route, method='POST')(
+                partial(self.cmd_runner.run_command, method=command.method, plugin=plugin))
 
         for callback in find_callbacks(plugin):
             regex = re.compile(callback.id_regex)
