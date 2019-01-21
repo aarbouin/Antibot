@@ -34,6 +34,12 @@ class BoxUi:
                                         actions=[add_dessert_action, clear_dessert_action],
                                         text='Add a dessert')
 
+        add_soup_action = Action.button(OrderAction.add_soup, 'Take a Soup', 'add_soup')
+        clear_others_action = Action.button(OrderAction.clear_others, 'Clear others', 'clear_others')
+        others_attachment = Attachment('update_order_{}'.format(order._id),
+                                       actions=[add_soup_action, clear_others_action],
+                                       text='Other options')
+
         validate_button = Action.button(OrderAction.order_confirm, 'Validate', 'order_confirm', ActionStyle.primary)
         cancel_button = Action.button(OrderAction.order_cancel, 'Cancel', 'order_cancel', ActionStyle.danger)
         edit_button = Action.button(OrderAction.order_edit, 'Modify', 'order_edit', ActionStyle.default)
@@ -56,7 +62,7 @@ class BoxUi:
                                      color='warning' if order.in_edition else 'good')
         attachments = [main_attachment]
         if order.in_edition:
-            attachments.extend([box_attachment, dessert_attachment])
+            attachments.extend([box_attachment, dessert_attachment, others_attachment])
         return attachments
 
     def orders_text(self, orders: List[Order]) -> str:

@@ -21,7 +21,7 @@ class Box:
         self.price = price
 
     def __str__(self):
-        return '{} : {} - {}€'.format(self.box_type.value, self.name, self.price)
+        return '{} : {}'.format(self.box_type.value, self.name, self.price)
 
 
 @autovalue
@@ -31,7 +31,7 @@ class Soup:
         self.price = price
 
     def __str__(self):
-        return '{} : {} - {}€'.format('Soupe', self.name, self.price)
+        return '{} : {}'.format('Soupe', self.name, self.price)
 
 
 @autovalue

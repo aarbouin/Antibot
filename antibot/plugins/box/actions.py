@@ -7,6 +7,8 @@ class OrderAction:
     order_cancel = 'order_cancel'
     order_edit = 'order_edit'
     dismiss = 'dismiss'
+    add_soup = 'add_soup'
+    clear_others = 'clear_others'
 
 
 class PointsAction:

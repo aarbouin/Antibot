@@ -43,9 +43,9 @@ class Box(AntibotPlugin):
         date = self.menu_provider.date
         text = '*Menu du {}*\n'.format(date)
         for box in self.menu.boxes:
-            text += '• {}\n'.format(box)
+            text += '• {} - {}€\n'.format(box, box.price)
         if self.menu.soup is not None:
-            text += '• {}€'.format(self.menu.soup)
+            text += '• {} - {}€'.format(self.menu.soup, self.menu.soup.price)
         text += '\n*Desserts :*\n'
         for dessert in self.menu.desserts:
             if len(dessert.flavors) > 0:
@@ -98,6 +98,10 @@ class Box(AntibotPlugin):
                 order = order.update(in_edition=True)
             if action.name == OrderAction.dismiss:
                 return Message(delete_original=True)
+            if action.name == OrderAction.add_soup:
+                order = order.update(soups=order.soups + [self.menu.soup])
+            if action.name == OrderAction.clear_others:
+                order = order.update(soups=[])
 
         self.orders.update(order)
         return Message(self.display_order(order),
@@ -161,7 +165,7 @@ class Box(AntibotPlugin):
             self.messages.update_timestamp(cmd_message._id, new_ts)
 
     def display_order(self, order: Order) -> str:
-        items = order.boxes + order.desserts
+        items = order.all_items()
         total_price = sum(map(attrgetter('price'), items))
         if len(items) == 0:
             return 'Your order is empty'
