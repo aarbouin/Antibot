@@ -4,10 +4,10 @@ from bottle import request
 from pyckson import loads, serialize
 from pynject import Injector, pynject
 
-from antibot.backend.descriptor import PluginCallbackDescriptor
-from antibot.slack.api import SlackApi
 from antibot.backend.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, \
     METHOD_HAS_CHANNEL_ATTR
+from antibot.backend.descriptor import PluginCallbackDescriptor
+from antibot.repository.users import UsersRepository
 from antibot.slack.callback import InteractiveMessage
 from antibot.slack.channel import Channel
 from antibot.slack.message import Message
@@ -15,9 +15,9 @@ from antibot.slack.message import Message
 
 @pynject
 class CallbackRunner:
-    def __init__(self, injector: Injector, api: SlackApi):
+    def __init__(self, injector: Injector, users: UsersRepository):
         self.injector = injector
-        self.api = api
+        self.users = users
         self.callbacks = []
 
     def add_callback(self, callback: PluginCallbackDescriptor):
@@ -37,7 +37,7 @@ class CallbackRunner:
             if getattr(callback.method, METHOD_HAS_CALLBACK_ID_ATTR, False):
                 kwargs['callback_id'] = message.callback_id
             if getattr(callback.method, METHOD_HAS_USER_ATTR, False):
-                user = self.api.get_user(message.user.id)
+                user = self.users.get_user(message.user.id)
                 kwargs['user'] = user
             if getattr(callback.method, METHOD_HAS_ACTIONS_ATTR, False):
                 kwargs['actions'] = message.actions

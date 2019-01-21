@@ -1,12 +1,14 @@
+from typing import Iterator
+
 from pyckson import parse
 from pynject import singleton, pynject
 from slackclient import SlackClient
 
-from antibot.slack.user import Profile
-from antibot.slack.channel import Channel
 from antibot.model.configuration import Configuration
-from antibot.slack.message import Message
 from antibot.model.user import User
+from antibot.slack.channel import Channel
+from antibot.slack.message import Message
+from antibot.slack.user import Member
 
 
 @pynject
@@ -24,10 +26,11 @@ class SlackApi:
     def __init__(self, client: SlackClient):
         self.client = client
 
-    def get_user(self, user_id) -> User:
-        result = self.client.api_call('users.profile.get', user_id=user_id)
-        profile = parse(Profile, result['profile'])
-        return User(user_id, profile.display_name)
+    def list_users(self) -> Iterator[User]:
+        result = self.client.api_call('users.list')
+        for member in result['members']:
+            member = parse(Member, member)
+            yield User(member.id, member.profile.display_name)
 
     def get_channel(self, channel_id) -> Channel:
         result = self.client.api_call('channels.info', channel=channel_id)
