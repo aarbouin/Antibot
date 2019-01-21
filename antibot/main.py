@@ -22,7 +22,7 @@ class Main:
         self.addons.bootstrap()
         self.scheduler.bootstrap()
         bottle.DEBUG = True
-        bottle.run(port=5001)
+        bottle.run(port=5001, host='0.0.0.0')
 
 
 def run():
