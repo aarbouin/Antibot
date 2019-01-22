@@ -52,6 +52,9 @@ class MenuParser:
         self.full_line = ''
         self.old_full_line = ''
 
+    def reset(self):
+        self.menu = MenuBuilder()
+
     def parse(self, text) -> Menu:
         for line in iter_lines(text):
             if len(line) == 0:

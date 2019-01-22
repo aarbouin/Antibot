@@ -19,6 +19,7 @@ class MenuProvider:
     def get(self) -> Menu:
         today = arrow.utcnow().format('dddd D', locale='fr_FR').capitalize()
         if today != self.date:
+            self.parser.reset()
             self.menu = self.parser.parse(self.fetch_text())
             self.date = today
         return self.menu
