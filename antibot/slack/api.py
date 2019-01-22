@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from pyckson import parse
+from pyckson import parse, serialize
 from pynject import singleton, pynject
 from slackclient import SlackClient
 
@@ -37,8 +37,10 @@ class SlackApi:
         channel = parse(Channel, result['channel'])
         return channel
 
-    def post_message(self, channel_id: str, text: str) -> str:
-        result = self.client.api_call('chat.postMessage', channel=channel_id, text=text)
+    def post_message(self, channel_id: str, message: Message) -> str:
+        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
+        result = self.client.api_call('chat.postMessage', channel=channel_id, text=message.text,
+                                      attachments=attachments)
         return result['ts']
 
     def get_permalink(self, channel_id: str, timestamp: str) -> str:
@@ -46,6 +48,7 @@ class SlackApi:
         return result['permalink']
 
     def update_message(self, channel_id: str, timestamp: str, message: Message) -> str:
+        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
         result = self.client.api_call('chat.update', channel=channel_id, ts=timestamp,
-                                      text=message.text, attachments=message.attachments)
+                                      text=message.text, attachments=attachments)
         return result['ts']

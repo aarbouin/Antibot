@@ -41,7 +41,8 @@ class Box(AntibotPlugin):
         return self.menu_provider.get()
 
     @command('/box/menu')
-    def display_menu(self, user: User):
+    def display_menu(self):
+        self.menu_provider.get()
         date = self.menu_provider.date
         text = '*Menu du {}*\n'.format(date)
         for box in self.menu.boxes:
@@ -55,10 +56,9 @@ class Box(AntibotPlugin):
             else:
                 text += '• {}\n'.format(dessert.name)
 
-        menu = Attachment('menu', text=text, color=natcolor)
         action = Action.button('create_order', 'Place an order', 'create_order')
         attachment = Attachment('create_order', actions=[action])
-        return Message(attachments=[menu, attachment])
+        return Message(text, attachments=[attachment])
 
     @command('/box/order')
     @callback(r'^create_order$')
@@ -135,7 +135,10 @@ class Box(AntibotPlugin):
     def give_free_box(self, channel: Channel):
         pref_user = self.points.pref_user()
         self.points.update(pref_user.user, -85)
-        self.api.post_message(channel.id, 'A free box for {}'.format(pref_user.user.display_name))
+        message = Message(attachments=[
+            Attachment('', 'A free box for {}'.format(pref_user.user.display_name), natcolor)
+        ])
+        self.api.post_message(channel.id, message)
 
     def complete_order(self, channel: Channel, user: User, new_order: bool):
         cmds = list(self.messages.find_all('orders', date=today()))
@@ -146,7 +149,10 @@ class Box(AntibotPlugin):
             message = '{} placed an order\n<{}|View all orders>'
         else:
             message = '{} updated an order\n<{}|View all orders>'
-        self.api.post_message(channel.id, message.format(user.display_name, link))
+        msg = Message(attachments=[
+            Attachment('', message.format(user.display_name, link), natcolor)
+        ])
+        self.api.post_message(channel.id, msg)
         self.update_displayed_orders(channel)
 
     @command('/box/call')
@@ -155,7 +161,7 @@ class Box(AntibotPlugin):
 
     def display_orders(self, channel: Channel) -> SlackMessage:
         orders = list(self.orders.find_all(today()))
-        timestamp = self.api.post_message(channel.id, self.ui.orders_text(orders))
+        timestamp = self.api.post_message(channel.id, Message(self.ui.orders_text(orders)))
         message = SlackMessage.create_today('orders', timestamp)
         self.messages.create(message)
         return message
