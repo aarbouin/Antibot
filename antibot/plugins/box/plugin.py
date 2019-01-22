@@ -21,6 +21,8 @@ from antibot.slack.channel import Channel
 from antibot.slack.message import Message, Action, Attachment, MessageType
 from antibot.tools import today, yesterday
 
+natcolor = '#9b0000'
+
 
 @pynject
 class Box(AntibotPlugin):
@@ -53,9 +55,10 @@ class Box(AntibotPlugin):
             else:
                 text += '• {}\n'.format(dessert.name)
 
+        menu = Attachment('menu', text=text, color=natcolor)
         action = Action.button('create_order', 'Place an order', 'create_order')
         attachment = Attachment('create_order', actions=[action])
-        return Message(text, attachments=[attachment])
+        return Message(attachments=[menu, attachment])
 
     @command('/box/order')
     @callback(r'^create_order$')
