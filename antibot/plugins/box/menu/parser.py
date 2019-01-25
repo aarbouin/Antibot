@@ -5,7 +5,7 @@ from pynject import pynject
 
 from antibot.plugins.box.menu.model import BoxType, Box, MenuBuilder, Soup, Salad, Cheese, Dessert, Drink, Menu
 
-box_type_pattern = re.compile(r'^(NOUVEAU : )?Box\s+([\w\s]+)\s*([0-9\(\)]*)?\s*:\s*([0-9.]+) ?€', flags=re.IGNORECASE)
+box_type_pattern = re.compile(r'^(NOUVEAU : )?Box\s+([\w\s]+)\s*([0-9\(\)]*)?\s*:\s*([0-9.]*) ?€?', flags=re.IGNORECASE)
 box_soupe_pattern = re.compile(r'Soupe\s*:\s*([0-9.]+) ?€', flags=re.IGNORECASE)
 salad_pattern = re.compile(r'Salade Verte\s*:\s*([0-9.]+) ?€', flags=re.IGNORECASE)
 allergen_pattern = re.compile(r'(\([0-9]+\))')
@@ -13,6 +13,7 @@ fromage_pattern = re.compile(r'Portion de Fromage\s*:\s*([0-9.]+) ?€')
 yaourt_pattern = re.compile(r'Yaourts\s+\((.*)\)')
 fromage_blanc_pattern = re.compile(r'Fromage\sBlanc(.*)\((.*)\)')
 choice_drink = re.compile(r'(.*)\((\w+)\s*ou\s*(\w+)\)')
+price_in_box = re.compile(r':? ?([0-9.]+) ?€')
 
 
 class ParserState(Enum):
@@ -116,7 +117,10 @@ class MenuParser:
                 break
         else:
             self.box_type = BoxType.UNKNOWN
-        self.box_price = float(match.group(4))
+        if len(match.group(4).strip()) == 0:
+            self.box_price = -1
+        else:
+            self.box_price = float(match.group(4))
 
     def update_state(self, new_state):
         if self.state == ParserState.BOX:
@@ -135,6 +139,10 @@ class MenuParser:
         self.full_line = ''
 
     def add_box(self, name):
+        match = re.search(price_in_box, name)
+        if match is not None:
+            self.box_price = float(match.group(1))
+            name = re.sub(price_in_box, '', name)
         name = cleanup_allergen(name).strip()
         box = Box(self.box_type, name, self.box_price)
         self.menu.add_box(box)
