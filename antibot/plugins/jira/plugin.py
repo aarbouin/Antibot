@@ -1,13 +1,23 @@
+import os
+import re
+from json import loads
+from typing import List
+
+import requests
 from bottle import request
 from pyckson import parse
 from pynject import pynject
+from requests.auth import HTTPBasicAuth
 
+from antibot.decorators import event_callback
 from antibot.decorators import ws
 from antibot.model.plugin import AntibotPlugin
 from antibot.plugins.jira.errors import ErrorsRepository
 from antibot.plugins.jira.model import JiraEvent
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
+from antibot.slack.event import EventType, MessageEvent
+from antibot.slack.message import Field
 from antibot.slack.message import Message, Attachment
 
 
@@ -15,9 +25,42 @@ from antibot.slack.message import Message, Attachment
 class Jira(AntibotPlugin):
     def __init__(self, api: SlackApi, users: UsersRepository, errors: ErrorsRepository):
         super().__init__('Jira')
+        self.jira_home = os.environ.get('JIRA_HOME', '')
+        jira_login = os.environ.get('JIRA_LOGIN', '')
+        jira_password = os.environ.get('JIRA_PASSWORD', '')
+        self.auth = HTTPBasicAuth(jira_login, jira_password)
         self.api = api
         self.users = users
         self.errors = errors
+
+    @event_callback(EventType.message)
+    def link_issues(self, event: MessageEvent):
+        if not event.text or not self.jira_home:
+            return
+        found_issues = self._find_jira_issues(event)
+        if found_issues:
+            attachments = [self._to_attachment(i) for i in found_issues]
+            self.api.update_message(event.channel, event.ts, Message(text=event.text, attachments=attachments))
+
+    def _find_jira_issues(self, event: MessageEvent) -> List[dict]:
+        found_issues = []
+        maybe_issues = re.findall(r'[A-Z0-9]{2,}-[0-9]+', event.text)
+        for issue in maybe_issues:
+            response = requests.get('{}/rest/api/latest/issue/{}'.format(self.jira_home, issue), auth=self.auth)
+            if response.status_code == 200:
+                found_issues.append(loads(response.text))
+        return found_issues
+
+    def _to_attachment(self, issue: dict) -> Attachment:
+        key = issue.get('key', '')
+        fields = issue.get('fields', {})
+        issuetype = fields.get('issuetype', {}).get('name', '')
+        status = fields.get('status', {}).get('name', '')
+        return Attachment(title='[{}] {}'.format(key, fields.get('summary', '')),
+                          title_link='{}/browse/{}'.format(self.jira_home, key),
+                          text=fields.get('description', ''),
+                          color='#0747a6',
+                          fields=[Field(issuetype, short=True), Field(status, short=True)])
 
     @ws('/jira/validate', method='POST')
     def jira_hook(self):

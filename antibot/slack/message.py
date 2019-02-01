@@ -71,15 +71,26 @@ class Action:
         return Action(name, placeholder, ActionType.select, option_groups=options)
 
 
+class Field:
+    def __init__(self, title: str, value: Optional[str] = None, short: Optional[bool] = False):
+        self.title = title
+        self.value = value
+        self.short = short
+
+
 @no_camel_case
 class Attachment:
-    def __init__(self, callback_id: str, text: Optional[str] = None, color: Optional[str] = None,
-                 actions: List[Action] = None, fallback: Optional[str] = None):
+    def __init__(self, callback_id: Optional[str] = None, text: Optional[str] = None,
+                 color: Optional[str] = None, actions: List[Action] = None, fallback: Optional[str] = None,
+                 title: Optional[str] = None, title_link: Optional[str] = None, fields: List[Field] = None):
         self.callback_id = callback_id
         self.text = text
         self.color = color
         self.actions = actions
         self.fallback = fallback
+        self.title = title
+        self.title_link = title_link
+        self.fields = fields
 
 
 @no_camel_case
