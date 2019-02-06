@@ -1,7 +1,7 @@
 from inspect import getmembers
 from typing import Iterator
 
-from antibot.backend.constants import CMD_ATTR, CALLBACK_ATTR
+from antibot.backend.constants import CMD_ATTR, CALLBACK_ATTR, WS_ATTR
 
 
 class CommandDescriptor:
@@ -33,3 +33,16 @@ def find_callbacks(cls) -> Iterator[CallbackDescriptor]:
     for name, method in getmembers(cls):
         if hasattr(method, CALLBACK_ATTR):
             yield getattr(method, CALLBACK_ATTR)
+
+
+class WsDescriptor:
+    def __init__(self, route, http_method, method):
+        self.route = route
+        self.http_method = http_method
+        self.method = method
+
+
+def find_ws(cls) -> Iterator[WsDescriptor]:
+    for name, method in getmembers(cls):
+        if hasattr(method, WS_ATTR):
+            yield getattr(method, WS_ATTR)

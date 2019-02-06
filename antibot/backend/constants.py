@@ -1,6 +1,7 @@
 CMD_ATTR = '__cmd'
 CALLBACK_ATTR = '__callback'
 JOB_ATTR_DAILY = '__schedule'
+WS_ATTR = '__ws'
 METHOD_HAS_USER_ATTR = '__user_param'
 METHOD_HAS_ROOM_ATTR = '__room_param'
 METHOD_HAS_CALLBACK_ID_ATTR = '__message_param'
