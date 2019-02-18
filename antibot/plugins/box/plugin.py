@@ -9,7 +9,7 @@ from antibot.model.message import SlackMessage
 from antibot.model.plugin import AntibotPlugin
 from antibot.model.user import User
 from antibot.plugins.box.actions import OrderAction, PointsAction
-from antibot.plugins.box.menu.model import Box, DessertWithFlavor
+from antibot.plugins.box.menu.model import Box, DessertWithFlavor, Drink
 from antibot.plugins.box.menu.provider import MenuProvider
 from antibot.plugins.box.orders import OrderRepository, Order
 from antibot.plugins.box.points import PointsRepository, compute_points
@@ -103,8 +103,12 @@ class Box(AntibotPlugin):
                 return Message(delete_original=True)
             if action.name == OrderAction.add_soup:
                 order = order.update(soups=order.soups + [self.menu.soup])
+            if action.name == OrderAction.add_drink:
+                drink = self.find_drink(action.selected_options[0].value)
+                if drink is not None:
+                    order = order.update(drinks=order.drinks + [drink])
             if action.name == OrderAction.clear_others:
-                order = order.update(soups=[])
+                order = order.update(soups=[], drinks=[])
 
         self.orders.update(order)
         return Message(self.display_order(order),
@@ -187,6 +191,13 @@ class Box(AntibotPlugin):
         for box in self.menu.boxes:
             if repr(box) == id:
                 return box
+
+        return None
+
+    def find_drink(self, id) -> Optional[Drink]:
+        for drink in self.menu.drinks:
+            if repr(drink) == id:
+                return drink
 
         return None
 

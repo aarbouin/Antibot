@@ -35,9 +35,11 @@ class BoxUi:
                                         text='Add a dessert')
 
         add_soup_action = Action.button(OrderAction.add_soup, 'Take a Soup', 'add_soup')
+        options = [Option(drink.name, repr(drink)) for drink in menu.drinks]
+        add_drink_action = Action.select(OrderAction.add_drink, 'Have a drink...', options)
         clear_others_action = Action.button(OrderAction.clear_others, 'Clear others', 'clear_others')
         others_attachment = Attachment('update_order_{}'.format(order._id),
-                                       actions=[add_soup_action, clear_others_action],
+                                       actions=[add_soup_action, add_drink_action, clear_others_action],
                                        text='Other options')
 
         validate_button = Action.button(OrderAction.order_confirm, 'Validate', 'order_confirm', ActionStyle.primary)

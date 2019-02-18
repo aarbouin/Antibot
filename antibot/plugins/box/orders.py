@@ -8,7 +8,7 @@ from pymongo.database import Database
 from pynject import pynject
 
 from antibot.model.user import User
-from antibot.plugins.box.menu.model import Box, DessertWithFlavor, Soup
+from antibot.plugins.box.menu.model import Box, DessertWithFlavor, Soup, Drink
 from antibot.tools import updater, today
 
 
@@ -18,7 +18,7 @@ from antibot.tools import updater, today
 class Order:
     def __init__(self, _id: str, user: User, date: datetime, complete: bool = False, in_edition: bool = True,
                  boxes: List[Box] = None, desserts: List[DessertWithFlavor] = None, points_given: int = 0,
-                 soups: List[Soup] = None):
+                 soups: List[Soup] = None, drinks: List[Drink] = None):
         self._id = _id
         self.user = user
         self.date = date
@@ -28,9 +28,10 @@ class Order:
         self.desserts = desserts or []
         self.points_given = points_given
         self.soups = soups or []
+        self.drinks = drinks or []
 
     def all_items(self):
-        return self.boxes + self.desserts + self.soups
+        return self.boxes + self.desserts + self.soups + self.drinks
 
 
 @pynject

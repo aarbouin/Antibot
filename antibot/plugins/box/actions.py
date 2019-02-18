@@ -9,6 +9,7 @@ class OrderAction:
     dismiss = 'dismiss'
     add_soup = 'add_soup'
     clear_others = 'clear_others'
+    add_drink = 'add_drink'
 
 
 class PointsAction:

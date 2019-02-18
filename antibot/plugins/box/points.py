@@ -12,12 +12,15 @@ def compute_points(order: Order) -> int:
     total = 0
     for box in order.boxes:
         total -= box.price * 10
+        total += 85
     if len(order.desserts) > 0:
         total -= 10
         total -= len(order.desserts[1:]) * 15
+    if len(order.drinks) > 0:
+        total -= 10
+        total -= len(order.drinks[1:]) * 15
     for soup in order.soups:
         total -= soup.price * 10
-    total += 85
     return int(total)
 
 
