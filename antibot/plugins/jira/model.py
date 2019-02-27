@@ -14,13 +14,20 @@ class JiraVersion:
         self.name = name
 
 
+class JiraIssueType:
+    def __init__(self, name: str):
+        self.name = name
+
+
 @rename(release_note='customfield_10102')
 class JiraFields:
-    def __init__(self, assignee: JiraUser, release_note: str, labels: List[str], fix_versions: List[JiraVersion]):
+    def __init__(self, assignee: JiraUser, release_note: str, labels: List[str], fix_versions: List[JiraVersion],
+                 issuetype: JiraIssueType):
         self.assignee = assignee
         self.release_note = release_note
         self.labels = labels
         self.fix_versions = fix_versions
+        self.issuetype = issuetype
 
 
 class JiraIssue:

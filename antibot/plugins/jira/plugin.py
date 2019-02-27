@@ -27,6 +27,9 @@ class Jira(AntibotPlugin):
         if 'not-for-release-note' in event.issue.fields.labels:
             return
 
+        if event.issue.fields.issuetype.name in ['Task', 'Think']:
+            return
+
         problems = []
         if event.issue.fields.release_note == 'None' or len(event.issue.fields.release_note.strip()) == 0:
             problems.append('has no release note information')
