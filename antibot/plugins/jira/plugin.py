@@ -35,6 +35,8 @@ class Jira(AntibotPlugin):
 
     @event_callback(EventType.message)
     def link_issues(self, event: MessageEvent):
+        if event.bot_id is not None:
+            return
         if not event.text or not self.jira_home:
             return
         found_issues = self._find_jira_issues(event)
@@ -44,7 +46,7 @@ class Jira(AntibotPlugin):
 
     def _find_jira_issues(self, event: MessageEvent) -> List[dict]:
         found_issues = []
-        maybe_issues = re.findall(r'[A-Z0-9]{2,}-[0-9]+', event.text)
+        maybe_issues = set(re.findall(r'[A-Z0-9]{2,}-[0-9]+', event.text))
         for issue in maybe_issues:
             response = requests.get('{}/rest/api/latest/issue/{}'.format(self.jira_home, issue), auth=self.auth)
             if response.status_code == 200:

@@ -1,8 +1,7 @@
-from json import dumps
 from typing import Iterator
 
 from bottle import request
-from pyckson import loads
+from pyckson import parse
 from pynject import Injector, pynject
 
 from antibot.backend.constants import METHOD_HAS_EVENT_ATTR
@@ -25,14 +24,13 @@ class EventCallbackRunner:
                 yield callback
 
     def run_callback(self):
-        event_json = dumps(request.json['event'])
-        event = loads(Event, event_json)
+        event = parse(Event, request.json['event'])
 
         for callback in self.find_callback(event.type):
             instance = self.injector.get_instance(callback.plugin_cls)
 
             kwargs = {}
             if getattr(callback.method, METHOD_HAS_EVENT_ATTR, False):
-                kwargs['event'] = loads(event.type.value, event_json)
+                kwargs['event'] = parse(event.type.value, request.json['event'])
 
             callback.method(instance, **kwargs)
