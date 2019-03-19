@@ -17,3 +17,5 @@ class AddOnBootstrap:
         logging.getLogger(__name__).info('Bootstraping AddOns')
         for plugin in self.plugins.plugins:
             self.installer.install_plugin(plugin)
+
+        self.installer.install_event_callbacks()
