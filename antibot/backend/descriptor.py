@@ -2,8 +2,6 @@ from inspect import getmembers
 from typing import Iterator
 
 from antibot.backend.constants import CMD_ATTR, CALLBACK_ATTR, WS_ATTR
-from antibot.backend.constants import EVENT_CALLBACK_ATTR
-from antibot.slack.event import EventType
 
 
 class CommandDescriptor:
@@ -48,22 +46,3 @@ def find_ws(cls) -> Iterator[WsDescriptor]:
     for name, method in getmembers(cls):
         if hasattr(method, WS_ATTR):
             yield getattr(method, WS_ATTR)
-
-
-class EventCallbackDescriptor:
-    def __init__(self, event_type: EventType, method):
-        self.event_type = event_type
-        self.method = method
-
-
-class PluginEventCallbackDescriptor:
-    def __init__(self, event_type: EventType, method, plugin_cls):
-        self.event_type = event_type
-        self.method = method
-        self.plugin_cls = plugin_cls
-
-
-def find_event_callbacks(cls) -> Iterator[EventCallbackDescriptor]:
-    for name, method in getmembers(cls):
-        if hasattr(method, EVENT_CALLBACK_ATTR):
-            yield getattr(method, EVENT_CALLBACK_ATTR)
