@@ -26,5 +26,6 @@ setup(name='Antibot',
           'schedule',
           'slackclient',
           'straight.plugin',
+          'jira'
       ],
       )
