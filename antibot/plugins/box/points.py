@@ -5,7 +5,8 @@ from pymongo.database import Database
 from pynject import pynject
 
 from antibot.model.user import User
-from antibot.plugins.box.orders import Order
+from antibot.plugins.box.orders import Order, OrderRepository
+from antibot.tools import today
 
 
 def compute_points(order: Order) -> int:
@@ -32,8 +33,9 @@ class UserPoints:
 
 @pynject
 class PointsRepository:
-    def __init__(self, db: Database):
+    def __init__(self, db: Database, orders: OrderRepository):
         self.collection = db['box_points']
+        self.orders = orders
 
     def get(self, user: User) -> UserPoints:
         document = self.collection.find_one({'user.id': user.id})
@@ -55,4 +57,5 @@ class PointsRepository:
             yield parse(UserPoints, doc)
 
     def pref_user(self) -> UserPoints:
-        return list(self.find_all())[0]
+        today_users = [order.user.id for order in self.orders.find_all(today())]
+        return [up for up in self.find_all() if up.user.id in today_users][0]
