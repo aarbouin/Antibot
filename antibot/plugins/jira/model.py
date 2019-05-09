@@ -22,6 +22,7 @@ class JiraIssueType:
 class JiraPriority:
     Blocker = '1'
     Medium = '3'
+    OnFire = '10100'
 
     def __init__(self, name: str, id: str):
         self.name = name
