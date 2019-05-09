@@ -43,13 +43,12 @@ class Jira(AntibotPlugin):
         if active_sprint is not None and event.issue.fields.project.key == 'FT':
             self.jira.add_issues_to_sprint(active_sprint.id, [event.issue.key])
 
-        if event.issue.fields.priority.id == JiraPriority.OnFire:
-            text = '<!channel> <{}|{}> was just created by <@{}>.'
-            text = text.format(url, event.issue.key, user.id)
-            priority = event.issue.fields.priority.name
-            attachment1 = Attachment('-', text='Priority is {}'.format(priority), color='#ff0000')
-            attachment2 = Attachment('-', text='*{}*'.format(event.issue.fields.summary), color='#ff0000')
-            self.api.post_message('ft-product-team', Message(text=text, attachments=[attachment1, attachment2]))
+        text = '<!channel> <{}|{}> was just created by <@{}>.'
+        text = text.format(url, event.issue.key, user.id)
+        priority = event.issue.fields.priority.name
+        attachment1 = Attachment('-', text='Priority is {}'.format(priority), color='#ff0000')
+        attachment2 = Attachment('-', text='*{}*'.format(event.issue.fields.summary), color='#ff0000')
+        self.api.post_message('ft-product-team', Message(text=text, attachments=[attachment1, attachment2]))
 
     @ws('/jira/validate', method='POST')
     def jira_hook(self):
