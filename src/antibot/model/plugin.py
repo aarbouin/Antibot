@@ -10,5 +10,6 @@ class AntibotPlugin:
 
 def find_plugins() -> Iterable[AntibotPlugin]:
     for entry_point in pkg_resources.iter_entry_points('antibot'):
-        if issubclass(entry_point, AntibotPlugin):
-            yield entry_point
+        object = entry_point.load()
+        if issubclass(object, AntibotPlugin):
+            yield object
