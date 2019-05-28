@@ -1,0 +1,23 @@
+stages:
+  - build
+  - push
+
+build:
+  stage: build
+  image: python:3.6
+  script:
+    - python3 setup.py build sdist bdist_wheel
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 hour
+
+
+push:
+  stage: push
+  image: python:3.6
+  script:
+    - pip3 install devpi-client
+    - devpi use http://pypi.mrs.antidot.net/antidot/antibot/
+    - devpi login antidot --password ikarios
+    - devpi upload dist/*

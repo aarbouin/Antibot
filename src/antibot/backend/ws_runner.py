@@ -11,10 +11,10 @@ class WsRunner:
     def __init__(self, injector: Injector):
         self.injector = injector
 
-    def run_ws(self, method, plugin: Type[AntibotPlugin]):
+    def run_ws(self, method, plugin: Type[AntibotPlugin], **kwargs):
         instance = self.injector.get_instance(plugin)
 
-        reply = method(instance)
+        reply = method(instance, **kwargs)
         if reply is not None:
             if isinstance(reply, dict):
                 return reply

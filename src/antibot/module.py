@@ -2,7 +2,7 @@ from jira import JIRA
 from pymongo.database import Database
 from pymongo.mongo_client import MongoClient
 from pynject import Module
-from slackclient import SlackClient
+from slack import WebClient
 
 from antibot.backend.plugins import PluginsCollection
 from antibot.jira_client import JiraProvider
@@ -19,7 +19,7 @@ class AntibotModule(Module):
     def configure(self):
         for plugin in self.plugins:
             self.bind(plugin).as_singleton()
-        self.bind(SlackClient).to_provider(SlackClientProvider)
+        self.bind(WebClient).to_provider(SlackClientProvider)
         self.bind(JIRA).as_singleton()
         self.bind(JIRA).to_provider(JiraProvider)
         self.bind(Configuration).to_instance(self.configuration)
