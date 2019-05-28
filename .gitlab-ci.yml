@@ -1,5 +1,6 @@
 stages:
   - build
+  - test
   - push
 
 build:
@@ -12,6 +13,13 @@ build:
       - dist
     expire_in: 1 hour
 
+test:
+  stage: test
+  image: python:3.6
+  script:
+    - pip3 install pytest
+    - pip3 install dist/*.whl
+    - pytest tests
 
 push:
   stage: push
