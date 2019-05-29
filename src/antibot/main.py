@@ -29,10 +29,13 @@ def run():
     logging.basicConfig(level=logging.INFO)
     logging.getLogger("requests").setLevel(logging.DEBUG)
 
+    allowed_ips = [ip for ip in os.environ.get('WS_IP_RESTRICTIONS', '').split(' ') if len(ip) > 0]
     configuration = Configuration(os.environ['VERIFICATION_TOKEN'],
                                   os.environ['SLACK_API_TOKEN'],
                                   os.environ.get('VHOST', 'http://localhost:5001'),
-                                  os.environ['SIGNING_SECRET'])
+                                  os.environ['SIGNING_SECRET'],
+                                  os.environ['WS_API_KEY'],
+                                  allowed_ips)
     antibot_module = AntibotModule(configuration, list(find_plugins()))
     injector = Injector(antibot_module)
 
