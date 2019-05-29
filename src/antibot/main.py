@@ -31,7 +31,8 @@ def run():
 
     configuration = Configuration(os.environ['VERIFICATION_TOKEN'],
                                   os.environ['SLACK_API_TOKEN'],
-                                  os.environ.get('VHOST', 'http://localhost:5001'))
+                                  os.environ.get('VHOST', 'http://localhost:5001'),
+                                  os.environ['SIGNING_SECRET'])
     antibot_module = AntibotModule(configuration, list(find_plugins()))
     injector = Injector(antibot_module)
 
