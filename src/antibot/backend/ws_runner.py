@@ -3,6 +3,7 @@ from pyckson import serialize
 from pynject import Injector, pynject
 from typing import Type
 
+from antibot.backend.constants import WS_JSON_VALUES
 from antibot.model.configuration import Configuration
 from antibot.model.plugin import AntibotPlugin
 
@@ -23,7 +24,6 @@ class WsRunner:
 
         reply = method(instance, **kwargs)
         if reply is not None:
-            if isinstance(reply, dict):
-                return reply
-            else:
+            if getattr(method, WS_JSON_VALUES, False):
                 return serialize(reply)
+            return reply
