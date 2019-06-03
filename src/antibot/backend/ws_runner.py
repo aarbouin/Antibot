@@ -14,10 +14,10 @@ class WsRunner:
         self.configuration = configuration
 
     def run_ws(self, method, plugin: Type[AntibotPlugin], **kwargs):
-        if self.configuration.ws_api_key != request.params['apikey']:
+        if self.configuration.ws_api_key != request.params.get('apikey'):
             abort(401, 'Could not verify api key')
-        if len(self.configuration.ws_ip_restictions) > 0 \
-                and request.headers['X-Forwarded-For'] not in self.configuration.ws_ip_restictions:
+        ip = request.get_header('X-Forwarded-For', request.environ.get('REMOTE_ADDR'))
+        if len(self.configuration.ws_ip_restictions) > 0 and ip not in self.configuration.ws_ip_restictions:
             abort(401, 'Unauthorized IP')
         instance = self.injector.get_instance(plugin)
 
