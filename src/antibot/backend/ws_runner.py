@@ -1,7 +1,9 @@
-from bottle import request, abort
+import traceback
+from typing import Type
+
+from bottle import request, abort, HTTPError
 from pyckson import serialize
 from pynject import Injector, pynject
-from typing import Type
 
 from antibot.backend.constants import WS_JSON_VALUES
 from antibot.model.configuration import Configuration
@@ -22,8 +24,13 @@ class WsRunner:
             abort(401, 'Unauthorized IP')
         instance = self.injector.get_instance(plugin)
 
-        reply = method(instance, **kwargs)
-        if reply is not None:
-            if getattr(method, WS_JSON_VALUES, False):
-                return serialize(reply)
-            return reply
+        try:
+            reply = method(instance, **kwargs)
+            if reply is not None:
+                if getattr(method, WS_JSON_VALUES, False):
+                    return serialize(reply)
+                return reply
+        except Exception as e:
+            if not isinstance(e, HTTPError):
+                traceback.print_exc()
+                abort(500)

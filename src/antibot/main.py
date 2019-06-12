@@ -26,8 +26,7 @@ class Main:
 
 
 def run():
-    logging.basicConfig(level=logging.INFO)
-    logging.getLogger("requests").setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
 
     allowed_ips = [ip for ip in os.environ.get('WS_IP_RESTRICTIONS', '').split(' ') if len(ip) > 0]
     configuration = Configuration(os.environ['VERIFICATION_TOKEN'],
