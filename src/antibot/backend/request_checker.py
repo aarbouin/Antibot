@@ -14,7 +14,7 @@ class RequestChecker:
         self.configuration = configuration
 
     def check_request(self, request: BaseRequest):
-        timestamp = request.headers['X-Slack-Request-Timestamp ']
+        timestamp = request.headers['X-Slack-Request-Timestamp']
         if abs(time.time() - float(timestamp)) > 60 * 5:
             abort(401, 'Invalid timestamp')
         body = request.body.read()
