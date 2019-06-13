@@ -14,7 +14,8 @@ setup(name='antibot',
           'Programming Language :: Python :: 3'
       ],
       entry_points={
-          'console_scripts': ['antibot=antibot.main:run']
+          'console_scripts': ['antibot=antibot.main:run'],
+          'antibot': ['antibot=antibot.base:BasePlugin']
       },
       packages=find_packages(where='src'),
       package_dir={'': 'src'},
