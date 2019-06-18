@@ -17,7 +17,8 @@ class WsRunner:
         self.configuration = configuration
 
     def run_ws(self, method, plugin: Type[AntibotPlugin], **kwargs):
-        if self.configuration.ws_api_key != request.params.get('apikey'):
+        request_key = request.params.get('apikey') or request.headers.get('X-Gitlab-Token')
+        if self.configuration.ws_api_key != request_key:
             abort(401, 'Could not verify api key')
         ip = request.get_header('X-Forwarded-For', request.environ.get('REMOTE_ADDR'))
         if len(self.configuration.ws_ip_restictions) > 0 and ip not in self.configuration.ws_ip_restictions:
