@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Optional, Dict
 
 from pyckson import no_camel_case
+
+from antibot.slack.message import Option
 
 
 @no_camel_case
@@ -31,7 +33,61 @@ class CallbackAction:
 
 
 @no_camel_case
-class InteractiveMessage:
+class Container:
+    def __init__(self, message_ts: str):
+        self.message_ts = message_ts
+
+
+@no_camel_case
+class BlockAction:
+    def __init__(self, action_id: str, block_id: str, value: Optional[str] = None,
+                 selected_option: Optional[Option] = None, selected_date: Optional[str] = None):
+        self.action_id = action_id
+        self.block_id = block_id
+        self.value = value
+        self.selected_option = selected_option
+        self.selected_date = selected_date
+
+
+@no_camel_case
+class BlockPayload:
+    def __init__(self, user: CallbackUser, channel: CallbackChannel,
+                 actions: List[BlockAction], response_url: str, trigger_id: str,
+                 container: Container):
+        self.user = user
+        self.channel = channel
+        self.actions = actions
+        self.response_url = response_url
+        self.trigger_id = trigger_id
+        self.container = container
+
+
+@no_camel_case
+class DialogSubmitPayload:
+    def __init__(self, callback_id: str, user: CallbackUser, channel: CallbackChannel,
+                 submission: Dict[str, str], state: Optional[str] = None,
+                 response_url: Optional[str] = None):
+        self.callback_id = callback_id
+        self.user = user
+        self.channel = channel
+        self.submission = submission
+        self.state = state
+        self.response_url = response_url
+
+
+@no_camel_case
+class DialogCancelPayload:
+    def __init__(self, callback_id: str, user: CallbackUser, channel: CallbackChannel,
+                 state: Optional[str] = None, response_url: Optional[str] = None):
+        self.callback_id = callback_id
+        self.user = user
+        self.channel = channel
+        self.state = state
+        self.response_url = response_url
+
+
+@no_camel_case
+class CallbackPayload:
     def __init__(self, callback_id: str, user: CallbackUser, channel: CallbackChannel,
                  actions: List[CallbackAction] = None):
         self.callback_id = callback_id

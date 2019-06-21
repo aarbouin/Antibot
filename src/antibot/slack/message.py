@@ -1,7 +1,10 @@
 from enum import Enum
 from typing import Optional, List
 
+from autovalue import autovalue
 from pyckson import no_camel_case
+
+from antibot.slack.messages_v2 import Block
 
 
 class MessageType(Enum):
@@ -48,7 +51,8 @@ class Confirmation:
 class Action:
     def __init__(self, name: str, text: str, type: ActionType, value: Optional[str] = None,
                  options: List[Option] = None, option_groups: List[OptionGroup] = None,
-                 style: Optional[ActionStyle] = None, confirm: Optional[Confirmation] = None):
+                 style: Optional[ActionStyle] = None, confirm: Optional[Confirmation] = None,
+                 selected_options: List[Option] = None):
         self.name = name
         self.text = text
         self.type = type
@@ -57,14 +61,16 @@ class Action:
         self.option_groups = option_groups
         self.style = style
         self.confirm = confirm
+        self.selected_options = selected_options
 
     @staticmethod
     def button(name, text, value, style: Optional[ActionStyle] = None, confirm: Optional[Confirmation] = None):
         return Action(name, text, ActionType.button, value=value, style=style, confirm=confirm)
 
     @staticmethod
-    def select(name, placeholder, options: List[Option]):
-        return Action(name, placeholder, ActionType.select, options=options)
+    def select(name, placeholder, options: List[Option], selected_option: Optional[Option] = None):
+        selected_options = None if selected_option is None else [selected_option]
+        return Action(name, placeholder, ActionType.select, options=options, selected_options=selected_options)
 
     @staticmethod
     def group_select(name, placeholder, options: List[OptionGroup]):
@@ -83,12 +89,59 @@ class Attachment:
 
 
 @no_camel_case
+@autovalue
 class Message:
     def __init__(self, text: Optional[str] = None, response_type: MessageType = MessageType.in_channel,
                  attachments: List[Attachment] = None, replace_original: bool = False,
-                 delete_original: bool = False):
+                 delete_original: bool = False, blocks: List[Block] = None, as_user: bool = False):
         self.text = text
         self.response_type = response_type
         self.attachments = attachments
         self.replace_original = replace_original
         self.delete_original = delete_original
+        self.blocks = blocks
+        self.as_user = as_user
+
+
+@no_camel_case
+class PostMessageReply:
+    def __init__(self, channel: str, ts: str):
+        self.channel = channel
+        self.ts = ts
+
+
+@no_camel_case
+class DialogElement:
+    def __init__(self, type: str, label: str, name: str):
+        self.type = type
+        self.label = label
+        self.name = name
+
+    @staticmethod
+    def text(label: str, name: str) -> 'DialogElement':
+        return DialogElement('text', label=label, name=name)
+
+
+@no_camel_case
+class Dialog:
+    def __init__(self, callback_id: str, title: str, submit_label: str, elements: List[DialogElement],
+                 state: Optional[str] = None, notify_on_cancel: bool = False):
+        self.callback_id = callback_id
+        self.title = title
+        self.submit_label = submit_label
+        self.elements = elements
+        self.state = state
+        self.notify_on_cancel = notify_on_cancel
+
+
+@no_camel_case
+class DialogError:
+    def __init__(self, name: str, error: str):
+        self.name = name
+        self.error = error
+
+
+@no_camel_case
+class DialogReply:
+    def __init__(self, errors: List[DialogError]):
+        self.errors = errors

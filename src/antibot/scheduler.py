@@ -33,6 +33,7 @@ class Scheduler:
     def bootstrap(self):
         for plugin in self.plugins.plugins:
             for method, hour in find_daily_jobs(plugin):
+                print(method, hour)
                 schedule.every().day.at(hour).do(self.run, plugin, method)
         self.watch_thread.start()
 

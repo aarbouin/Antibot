@@ -1,29 +1,13 @@
-from inspect import signature
+from typing import Optional
 
-from antibot.backend.constants import METHOD_HAS_USER_ATTR, METHOD_HAS_ROOM_ATTR, CMD_ATTR, JOB_ATTR_DAILY, \
-    CALLBACK_ATTR, \
-    METHOD_HAS_CALLBACK_ID_ATTR, METHOD_HAS_ACTIONS_ATTR, METHOD_HAS_CHANNEL_ATTR, WS_ATTR, WS_JSON_VALUES
-from antibot.backend.descriptor import CommandDescriptor, CallbackDescriptor, WsDescriptor
-
-
-def set_params_options(f):
-    for name, param in signature(f).parameters.items():
-        if name == 'user':
-            setattr(f, METHOD_HAS_USER_ATTR, True)
-        if name == 'room':
-            setattr(f, METHOD_HAS_ROOM_ATTR, True)
-        if name == 'callback_id':
-            setattr(f, METHOD_HAS_CALLBACK_ID_ATTR, True)
-        if name == 'actions':
-            setattr(f, METHOD_HAS_ACTIONS_ATTR, True)
-        if name == 'channel':
-            setattr(f, METHOD_HAS_CHANNEL_ATTR, True)
+from antibot.backend.constants import CMD_ATTR, JOB_ATTR_DAILY, WS_ATTR, WS_JSON_VALUES, BLOCK_ACTION_OPTIONS, \
+    DIALOG_SUBMIT_ID, DIALOG_CANCEL_ID, CALLBACK_ID_REGEX
+from antibot.backend.descriptor import CommandDescriptor, WsDescriptor, BlockActionOptions
 
 
 def command(route):
     def decorator(f):
         setattr(f, CMD_ATTR, CommandDescriptor(route, f))
-        set_params_options(f)
         return f
 
     return decorator
@@ -31,8 +15,31 @@ def command(route):
 
 def callback(id_regex):
     def decorator(f):
-        setattr(f, CALLBACK_ATTR, CallbackDescriptor(id_regex, f))
-        set_params_options(f)
+        setattr(f, CALLBACK_ID_REGEX, id_regex)
+        return f
+
+    return decorator
+
+
+def block_action(block_id: Optional[str] = None, action_id: Optional[str] = None):
+    def decorator(f):
+        setattr(f, BLOCK_ACTION_OPTIONS, BlockActionOptions(block_id, action_id))
+        return f
+
+    return decorator
+
+
+def dialog_submit(callback_id: str):
+    def decorator(f):
+        setattr(f, DIALOG_SUBMIT_ID, callback_id)
+        return f
+
+    return decorator
+
+
+def dialog_cancel(callback_id: str):
+    def decorator(f):
+        setattr(f, DIALOG_CANCEL_ID, callback_id)
         return f
 
     return decorator

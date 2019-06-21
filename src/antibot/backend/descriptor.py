@@ -1,7 +1,9 @@
 from inspect import getmembers
-from typing import Iterator
+from typing import Iterator, Optional, Callable, Iterable, Any, Tuple
 
-from antibot.backend.constants import CMD_ATTR, CALLBACK_ATTR, WS_ATTR
+from autovalue import autovalue
+
+from antibot.backend.constants import CMD_ATTR, WS_ATTR
 
 
 class CommandDescriptor:
@@ -16,23 +18,17 @@ def find_commands(cls) -> Iterator[CommandDescriptor]:
             yield getattr(method, CMD_ATTR)
 
 
-class CallbackDescriptor:
-    def __init__(self, id_regex, method):
-        self.id_regex = id_regex
-        self.method = method
+@autovalue
+class BlockActionOptions:
+    def __init__(self, block_id: Optional[str] = None, action_id: Optional[str] = None):
+        self.block_id = block_id
+        self.action_id = action_id
 
 
-class PluginCallbackDescriptor:
-    def __init__(self, id_regex, method, plugin_cls):
-        self.id_regex = id_regex
-        self.method = method
-        self.plugin_cls = plugin_cls
-
-
-def find_callbacks(cls) -> Iterator[CallbackDescriptor]:
+def find_method_by_attribute(cls, attr) -> Iterable[Tuple[Callable, Any]]:
     for name, method in getmembers(cls):
-        if hasattr(method, CALLBACK_ATTR):
-            yield getattr(method, CALLBACK_ATTR)
+        if hasattr(method, attr):
+            yield (method, getattr(method, attr))
 
 
 class WsDescriptor:

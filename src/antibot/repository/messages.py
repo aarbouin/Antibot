@@ -20,6 +20,14 @@ class MessagesRepository:
         for item in self.collection.find(query):
             yield parse(SlackMessage, item)
 
+    def find_one(self, type: str, date: Optional[datetime] = None) -> Optional[SlackMessage]:
+        query = {'type': type}
+        if date is not None:
+            query['date'] = date
+        doc = self.collection.find_one(query)
+        if doc is not None:
+            return parse(SlackMessage, doc)
+
     def update_timestamp(self, id: str, timestamp: str):
         self.collection.update({'_id': id}, {'$set': {'timestamp': timestamp}})
 
