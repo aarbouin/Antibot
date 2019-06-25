@@ -1,7 +1,7 @@
 from typing import Iterator
 
 import requests
-from pyckson import parse, serialize, dumps
+from pyckson import parse, serialize
 from pynject import singleton, pynject
 from slack import WebClient
 
@@ -45,6 +45,13 @@ class SlackApi:
                                               attachments=attachments, blocks=blocks)
         return PostMessageReply(result['channel'], result['ts'])
 
+    def post_ephemeral(self, channel_id: str, user_id: str, message: Message) -> PostMessageReply:
+        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
+        blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
+        result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text,
+                                                attachments=attachments, blocks=blocks)
+        return PostMessageReply(channel_id, result['message_ts'])
+
     def get_permalink(self, channel_id: str, timestamp: str) -> str:
         result = self.client.chat_getPermalink(channel=channel_id, message_ts=timestamp)
         return result['permalink']
@@ -58,9 +65,7 @@ class SlackApi:
         return PostMessageReply(result['channel'], result['ts'])
 
     def respond(self, response_url: str, message: Message):
-        print(dumps(message))
         reply = requests.post(response_url, json=serialize(message))
-        print(reply.text)
         reply.raise_for_status()
 
     def open_dialog(self, trigger_id: str, dialog: Dialog):
