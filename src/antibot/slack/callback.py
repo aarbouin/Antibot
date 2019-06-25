@@ -89,8 +89,9 @@ class DialogCancelPayload:
 @no_camel_case
 class CallbackPayload:
     def __init__(self, callback_id: str, user: CallbackUser, channel: CallbackChannel,
-                 actions: List[CallbackAction] = None):
+                 response_url: str, actions: List[CallbackAction] = None):
         self.callback_id = callback_id
         self.user = user
         self.channel = channel
+        self.response_url = response_url
         self.actions = actions

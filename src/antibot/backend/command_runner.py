@@ -27,7 +27,8 @@ class CommandRunner:
         user = self.users.get_user(request.forms['user_id'])
         channel = Channel(request.forms['channel_id'], request.forms['channel_name'])
         response_url = request.forms['response_url']
-        reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url)
+        reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url,
+                                   params=request.forms['text'])
 
         if isinstance(reply, Message):
             return self.api.respond(response_url, reply)

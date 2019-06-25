@@ -93,7 +93,7 @@ class Attachment:
 class Message:
     def __init__(self, text: Optional[str] = None, response_type: MessageType = MessageType.in_channel,
                  attachments: List[Attachment] = None, replace_original: bool = False,
-                 delete_original: bool = False, blocks: List[Block] = None, as_user: bool = False):
+                 delete_original: bool = False, blocks: List[Block] = None, as_user: Optional[bool] = None):
         self.text = text
         self.response_type = response_type
         self.attachments = attachments

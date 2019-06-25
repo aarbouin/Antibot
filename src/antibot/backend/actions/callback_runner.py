@@ -1,7 +1,7 @@
 import re
 from typing import Type, Callable, Iterable, Pattern
 
-from pyckson import parse, serialize
+from pyckson import parse
 from pynject import pynject, singleton
 
 from antibot.backend.constants import CALLBACK_ID_REGEX
@@ -51,4 +51,4 @@ class CallbackRunner:
                                        callback_id=message.callback_id,
                                        actions=message.actions)
             if isinstance(reply, Message):
-                return serialize(reply)
+                self.api.respond(message.response_url, reply)
