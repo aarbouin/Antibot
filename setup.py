@@ -15,7 +15,10 @@ setup(name='antibot',
       ],
       entry_points={
           'console_scripts': ['antibot=antibot.main:run'],
-          'antibot': ['antibot=antibot.base:BasePlugin']
+          'antibot': [
+              'antibot=antibot.base:BasePlugin',
+              'dismiss=antibot.base:DismissActionPlugin',
+          ]
       },
       packages=find_packages(where='src'),
       package_dir={'': 'src'},
