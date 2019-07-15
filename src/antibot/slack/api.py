@@ -1,8 +1,10 @@
+import logging
 from typing import Iterator
 
 import requests
-from pyckson import parse, serialize
+from pyckson import parse, serialize, dumps
 from pynject import singleton, pynject
+from requests import HTTPError
 from slack import WebClient
 
 from antibot.model.configuration import Configuration
@@ -66,7 +68,13 @@ class SlackApi:
 
     def respond(self, response_url: str, message: Message):
         reply = requests.post(response_url, json=serialize(message))
-        reply.raise_for_status()
+        try:
+            reply.raise_for_status()
+        except HTTPError:
+            logging.getLogger(__name__).error(reply.text)
+            print('##### blocks #####')
+            print(dumps(message.blocks))
+            raise
 
     def open_dialog(self, trigger_id: str, dialog: Dialog):
         self.client.dialog_open(dialog=serialize(dialog), trigger_id=trigger_id)
