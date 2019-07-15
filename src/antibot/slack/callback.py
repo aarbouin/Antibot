@@ -41,12 +41,15 @@ class Container:
 @no_camel_case
 class BlockAction:
     def __init__(self, action_id: str, block_id: str, value: Optional[str] = None,
-                 selected_option: Optional[Option] = None, selected_date: Optional[str] = None):
+                 selected_option: Optional[Option] = None, selected_date: Optional[str] = None,
+                 selected_channel: Optional[str] = None, selected_user: Optional[str] = None):
         self.action_id = action_id
         self.block_id = block_id
         self.value = value
         self.selected_option = selected_option
         self.selected_date = selected_date
+        self.selected_channel = selected_channel
+        self.selected_user = selected_user
 
 
 @no_camel_case
