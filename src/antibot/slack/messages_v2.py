@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from pyckson import no_camel_case
 
@@ -102,7 +102,7 @@ class Element:
 
 @no_camel_case
 class Block:
-    def __init__(self, type: str, text: Optional[Text] = None, elements: List[Element] = None,
+    def __init__(self, type: str, text: Optional[Text] = None, elements: List[Union[Text, Element]] = None,
                  accessory: Optional[Element] = None):
         self.type = type
         self.text = text
@@ -116,3 +116,11 @@ class Block:
     @staticmethod
     def actions(*elements: Element) -> 'Block':
         return Block('actions', elements=list(elements))
+
+    @staticmethod
+    def divider() -> 'Block':
+        return Block('divider')
+
+    @staticmethod
+    def context(text: str) -> 'Block':
+        return Block('context', elements=[Text.mrkdwn(text)])
