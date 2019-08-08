@@ -1,3 +1,4 @@
+import traceback
 from inspect import getmembers
 from threading import Thread
 from time import sleep
@@ -38,5 +39,8 @@ class Scheduler:
         self.watch_thread.start()
 
     def run(self, cls, method):
-        instance = self.injector.get_instance(cls)
-        method(instance)
+        try:
+            instance = self.injector.get_instance(cls)
+            method(instance)
+        except Exception as e:
+            traceback.print_exc()
