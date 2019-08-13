@@ -8,13 +8,16 @@ from pynject import Injector, pynject
 from antibot.backend.constants import WS_JSON_VALUES
 from antibot.model.configuration import Configuration
 from antibot.model.plugin import AntibotPlugin
+from antibot.slack.api import SlackApi
+from antibot.tools import notify_errors
 
 
 @pynject
 class WsRunner:
-    def __init__(self, injector: Injector, configuration: Configuration):
+    def __init__(self, injector: Injector, configuration: Configuration, api: SlackApi):
         self.injector = injector
         self.configuration = configuration
+        self.api = api
 
     def run_ws(self, method, plugin: Type[AntibotPlugin], **kwargs):
         request_key = request.params.get('apikey') or request.headers.get('X-Gitlab-Token')
@@ -25,13 +28,9 @@ class WsRunner:
             abort(401, 'Unauthorized IP')
         instance = self.injector.get_instance(plugin)
 
-        try:
+        with notify_errors(self.api, request.json):
             reply = method(instance, **kwargs)
             if reply is not None:
                 if getattr(method, WS_JSON_VALUES, False):
                     return serialize(reply)
                 return reply
-        except Exception as e:
-            if not isinstance(e, HTTPError):
-                traceback.print_exc()
-                abort(500)

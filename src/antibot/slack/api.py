@@ -1,4 +1,5 @@
 import logging
+from io import BytesIO
 from typing import Iterator
 
 import requests
@@ -78,3 +79,7 @@ class SlackApi:
 
     def open_dialog(self, trigger_id: str, dialog: Dialog):
         self.client.dialog_open(dialog=serialize(dialog), trigger_id=trigger_id)
+
+    def upload_file(self, channel_id: str, filename: str, title: str, content: bytes):
+        self.client.files_upload(file=BytesIO(content), filename=filename,
+                                 title=title, channels=channel_id)
