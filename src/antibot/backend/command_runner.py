@@ -10,6 +10,7 @@ from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
 from antibot.slack.channel import Channel
 from antibot.slack.message import Message
+from antibot.tools import notify_errors
 
 
 @pynject
@@ -27,8 +28,11 @@ class CommandRunner:
         user = self.users.get_user(request.forms['user_id'])
         channel = Channel(request.forms['channel_id'], request.forms['channel_name'])
         response_url = request.forms['response_url']
-        reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url,
-                                   params=request.forms['text'])
+        params = request.forms['text']
+
+        with notify_errors(self.api, {'params': params}):
+            reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url,
+                                       params=params)
 
         if isinstance(reply, Message):
             return self.api.respond(response_url, reply)
