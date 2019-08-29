@@ -18,6 +18,7 @@ setup(name='antibot',
           'antibot': [
               'antibot=antibot.base:BasePlugin',
               'dismiss=antibot.base:DismissActionPlugin',
+              'debug=antibot.base:DebuggerPlugin',
           ]
       },
       packages=find_packages(where='src'),

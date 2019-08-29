@@ -3,6 +3,7 @@ from typing import Type
 from bottle import request
 from pynject import pynject
 
+from antibot.backend.debugger import Debugger
 from antibot.backend.endpoint_runner import EndpointRunner
 from antibot.backend.request_checker import RequestChecker
 from antibot.model.plugin import AntibotPlugin
@@ -10,17 +11,17 @@ from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
 from antibot.slack.channel import Channel
 from antibot.slack.message import Message
-from antibot.tools import notify_errors
 
 
 @pynject
 class CommandRunner:
     def __init__(self, endpoints: EndpointRunner, users: UsersRepository, checker: RequestChecker,
-                 api: SlackApi):
+                 api: SlackApi, debugger: Debugger):
         self.endpoints = endpoints
         self.users = users
         self.checker = checker
         self.api = api
+        self.debugger = debugger
 
     def run_command(self, method, plugin: Type[AntibotPlugin]):
         self.checker.check_request(request)
@@ -30,7 +31,7 @@ class CommandRunner:
         response_url = request.forms['response_url']
         params = request.forms['text']
 
-        with notify_errors(self.api, {'params': params}):
+        with self.debugger.wrap({'params': params}):
             reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url,
                                        params=params)
 
