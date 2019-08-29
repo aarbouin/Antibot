@@ -1,3 +1,4 @@
+from datetime import datetime
 from json import dumps
 
 from pynject import pynject
@@ -41,10 +42,14 @@ class DebuggerPlugin(AntibotPlugin):
         self.api = api
 
     @command('/debug')
-    def catch_queries(self, params: str, response_url: str):
+    def catch_queries(self, params: str):
         nb_queries = int(params)
 
         def callback(query: dict):
-            self.api.respond(response_url, Message('```{}```'.format(dumps(query))))
+            date = datetime.now().isoformat()
+            self.api.upload_file('bot',
+                                 filename='debug-{}-query.json'.format(date),
+                                 title='Antibot debug query from {}'.format(date),
+                                 content=dumps(query, indent=2).encode('utf-8'))
 
         self.debugger.add_hook(QueryCatcher(nb_queries, callback))
