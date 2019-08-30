@@ -2,7 +2,7 @@
 
 ## Git
 
-Create a dedicated root directory for antibot dev, and associate a python virtualenv to it.
+Create a *dedicated root directory* for antibot dev, and associate a python virtualenv to it.
 
 Clone projects `antibot`, `template`, `k8s` and optionally `jirahandler`
 
@@ -17,14 +17,10 @@ You should use [serveo](https://serveo.net/) to expose your dev environement to 
 
 Create an app on https://api.slack.com/apps
 
-Enable the following features :
- * interactive components: toggle the feature on
+Configure the following features :
+ * Interactive Components: toggle the feature `on` and use `https://name.serveo.net/action` as url
  * Bot Users: add a new bot user named antibot-<you>
  * OAuth & Permissions: install the app
- 
-In `Interactive components` use `https://name.serveo.net/action` as url
-
-Install the bot
 
 ## Your plugin
 
@@ -49,9 +45,12 @@ Create a `env.list` file in the root antibot directory with the following conten
     PROD_RN_USER=bot@fluidtopics.com
     PROD_RN_PASSWORD=
     
-You may skip some of these variables if you don't need them.
+The `<verification-token>` and `<signing-secret>` info are available from your Slack app `Basic Information` screen.
+The `<bot-user-access-token>` info is available from you Slack app `OAuth & Permissions` screen.
 
-in `k8s` project, launch `./test/run.py`
+
+To start the dev environment, go to the `k8s` project directory and launch `./test/run.py`.
+This will run a docker with all python dependancies installed and all your antibot repositories mounted.
 
 ## Prod
 
