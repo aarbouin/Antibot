@@ -8,8 +8,6 @@ Clone projects `antibot`, `template`, `k8s` and optionally `jirahandler`
 
 Install `cookiecutter`
 
-Install `antibot` in editable mode
-
 ## Serveo
 You should use [serveo](https://serveo.net/) to expose your dev environement to outside.
 
@@ -20,10 +18,9 @@ You should use [serveo](https://serveo.net/) to expose your dev environement to 
 Create an app on https://api.slack.com/apps
 
 Enable the following features :
- * interactive components
- * slash commands
- * bots
- * permissions
+ * interactive components: toggle the feature on
+ * Bot Users: add a new bot user named antibot-<you>
+ * OAuth & Permissions: install the app
  
 In `Interactive components` use `https://name.serveo.net/action` as url
 
