@@ -13,6 +13,8 @@ You should use [serveo](https://serveo.net/) to expose your dev environement to 
 
 `ssh -R <name>:80:localhost:5001 serveo.net`
 
+Adendum : serveo seems to be down currently, you can use [ngrok](https://ngrok.com/) but you have to reconfigure the slack app on each restart (your dns is not stable).
+
 ## Slack
 
 Create an app on https://api.slack.com/apps
