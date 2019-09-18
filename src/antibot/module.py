@@ -1,3 +1,4 @@
+import os
 from typing import List, Type
 
 from pymongo.database import Database
@@ -23,6 +24,6 @@ class AntibotModule(Module):
         self.bind(WebClient).to_provider(SlackClientProvider)
         self.bind(Configuration).to_instance(self.configuration)
         self.bind(PluginsCollection).to_instance(PluginsCollection(self.plugins))
-        self.bind(Database).to_instance(MongoClient()['antibot'])
+        self.bind(Database).to_instance(MongoClient(os.environ['MONGO_URI'])['antibot'])
         for module in self.submodules:
             self.install(module())
