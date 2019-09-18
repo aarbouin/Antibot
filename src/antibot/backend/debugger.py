@@ -1,3 +1,4 @@
+import os
 import traceback
 from contextlib import contextmanager
 from datetime import datetime
@@ -41,16 +42,17 @@ class Debugger:
             self.process_hooks(query)
             yield
         except Exception:
-            date = datetime.now().isoformat()
-            self.api.upload_file('bot',
-                                 filename='error-{}-stacktrace.txt'.format(date),
-                                 title='Antibot error stacktrace from {}'.format(date),
-                                 content=traceback.format_exc().encode('utf-8'))
-            if query:
+            if os.environ.get('ENV', 'prod') != 'dev':
+                date = datetime.now().isoformat()
                 self.api.upload_file('bot',
-                                     filename='error-{}-query.json'.format(date),
-                                     title='Antibot error query from {}'.format(date),
-                                     content=dumps(query, indent=2).encode('utf-8'))
+                                     filename='error-{}-stacktrace.txt'.format(date),
+                                     title='Antibot error stacktrace from {}'.format(date),
+                                     content=traceback.format_exc().encode('utf-8'))
+                if query:
+                    self.api.upload_file('bot',
+                                         filename='error-{}-query.json'.format(date),
+                                         title='Antibot error query from {}'.format(date),
+                                         content=dumps(query, indent=2).encode('utf-8'))
             raise
 
     def process_hooks(self, query: dict):
