@@ -32,6 +32,7 @@ Use `cookiecutter template/` to create your project. Then push it as a new proje
 
 Create a `env.list` file in the root antibot directory with the following content :
 
+    MONGO_URI=mongodb://localhost:27017/
     VERIFICATION_TOKEN=<verification-token>
     SLACK_API_TOKEN=<bot-user-access-token>
     SIGNING_SECRET=<signing-secret>
@@ -50,6 +51,7 @@ Create a `env.list` file in the root antibot directory with the following conten
 The `<verification-token>` and `<signing-secret>` info are available from your Slack app `Basic Information` screen.
 The `<bot-user-access-token>` info is available from you Slack app `OAuth & Permissions` screen.
 
+You also need an available mongo database running somewhere.
 
 To start the dev environment, go to the `k8s` project directory and launch `./test/run.py`.
 This will run a docker with all python dependancies installed and all your antibot repositories mounted.
