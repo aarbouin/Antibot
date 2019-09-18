@@ -7,7 +7,7 @@ from pynject.injector import Injector
 
 from antibot.backend.bootstrap import AddOnBootstrap
 from antibot.model.configuration import Configuration
-from antibot.model.plugin import find_plugins
+from antibot.model.plugin import find_plugins, find_modules
 from antibot.module import AntibotModule
 from antibot.scheduler import Scheduler
 
@@ -35,7 +35,7 @@ def run():
                                   os.environ['SIGNING_SECRET'],
                                   os.environ['WS_API_KEY'],
                                   allowed_ips)
-    antibot_module = AntibotModule(configuration, list(find_plugins()))
+    antibot_module = AntibotModule(configuration, list(find_plugins()), list(find_modules()))
     injector = Injector(antibot_module)
 
     main = injector.get_instance(Main)
