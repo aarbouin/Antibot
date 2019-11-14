@@ -34,7 +34,8 @@ def run():
                                   os.environ.get('VHOST', 'http://localhost:5001'),
                                   os.environ['SIGNING_SECRET'],
                                   os.environ['WS_API_KEY'],
-                                  allowed_ips)
+                                  allowed_ips,
+                                  os.environ['SLACK_USER_TOKEN'])
     antibot_module = AntibotModule(configuration, list(find_plugins()), list(find_modules()))
     injector = Injector(antibot_module)
 

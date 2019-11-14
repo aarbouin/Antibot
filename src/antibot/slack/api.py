@@ -12,6 +12,7 @@ from antibot.model.configuration import Configuration
 from antibot.model.user import User
 from antibot.slack.channel import Channel
 from antibot.slack.message import Message, Dialog, PostMessageReply
+from antibot.slack.upload import File
 from antibot.slack.user import Member
 
 
@@ -27,8 +28,9 @@ class SlackClientProvider:
 @singleton
 @pynject
 class SlackApi:
-    def __init__(self, client: WebClient):
+    def __init__(self, client: WebClient, configuration: Configuration):
         self.client = client
+        self.user_client = WebClient(configuration.user_auth_token)
 
     def list_users(self) -> Iterator[User]:
         result = self.client.api_call('users.list')
@@ -81,5 +83,14 @@ class SlackApi:
         self.client.dialog_open(dialog=serialize(dialog), trigger_id=trigger_id)
 
     def upload_file(self, channel_id: str, filename: str, title: str, content: bytes):
-        self.client.files_upload(file=BytesIO(content), filename=filename,
+        result = self.client.files_upload(file=BytesIO(content), filename=filename,
                                  title=title, channels=channel_id)
+        print(result.data)
+        return parse(File, result.data['file'])
+
+    def upload_and_share(self, content: bytes, filename) -> File:
+        result = self.user_client.files_upload(file=BytesIO(content), filename=filename)
+        result = self.user_client.files_sharedPublicURL(file=result['file']['id'])
+        print(result.data)
+        return parse(File, result.data['file'])
+
