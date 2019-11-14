@@ -1,7 +1,11 @@
 from datetime import datetime
 from inspect import signature
+from typing import Iterable
 
 import arrow
+
+from antibot.slack.message import Message
+from antibot.slack.messages_v2 import Block
 
 
 def updater(cls):
@@ -24,3 +28,7 @@ def today() -> datetime:
 
 def yesterday() -> datetime:
     return arrow.utcnow().floor('day').shift(days=-1).datetime
+
+
+def message(blocks: Iterable[Block], **kwargs) -> Message:
+    return Message(blocks=list(blocks), **kwargs)

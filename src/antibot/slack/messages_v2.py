@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Iterable
 
 from pyckson import no_camel_case
 
@@ -58,7 +58,7 @@ class Element:
                  initial_option: Optional[Option] = None, initial_date: Optional[str] = None,
                  style: Optional[ActionStyle] = None, value: Optional[str] = None,
                  initial_channel: Optional[str] = None, initial_user: Optional[str] = None,
-                 confirm: Optional[Confirm] = None):
+                 confirm: Optional[Confirm] = None, initial_value: Optional[str] = None):
         self.type = type
         self.action_id = action_id
         self.text = text
@@ -71,6 +71,7 @@ class Element:
         self.initial_channel = initial_channel
         self.initial_user = initial_user
         self.confirm = confirm
+        self.initial_value = initial_value
 
     @staticmethod
     def button(action_id: str, text: str, style: Optional[ActionStyle] = None,
@@ -99,15 +100,28 @@ class Element:
         return Element('datepicker', action_id=action_id, placeholder=Text.plain(placeholder),
                        initial_date=initial_date)
 
+    @staticmethod
+    def text(action_id: str, placeholder: str, initial_value: Optional[str] = None):
+        return Element('plain_text_input', action_id=action_id, placeholder=Text.plain(placeholder),
+                       initial_value=initial_value)
+
 
 @no_camel_case
 class Block:
     def __init__(self, type: str, text: Optional[Text] = None, elements: List[Union[Text, Element]] = None,
-                 accessory: Optional[Element] = None):
+                 accessory: Optional[Element] = None, title: Optional[Text] = None, image_url: Optional[str] = None,
+                 alt_text: Optional[str] = None, label: Optional[Text] = None, element: Optional[Element] = None,
+                 block_id: Optional[str] = None):
         self.type = type
         self.text = text
         self.elements = elements
         self.accessory = accessory
+        self.title = title
+        self.image_url = image_url
+        self.alt_text = alt_text
+        self.label = label
+        self.element = element
+        self.block_id = block_id
 
     @staticmethod
     def section(text: str, accessory: Optional[Element] = None) -> 'Block':
@@ -124,3 +138,30 @@ class Block:
     @staticmethod
     def context(text: str) -> 'Block':
         return Block('context', elements=[Text.mrkdwn(text)])
+
+    @staticmethod
+    def image(title: str, url: str, alt_text: str):
+        return Block('image', title=Text.plain(title), image_url=url, alt_text=alt_text)
+
+    @staticmethod
+    def input(block_id: str, label: str, element: Element) -> 'Block':
+        return Block('input', block_id=block_id, label=Text.plain(label), element=element)
+
+
+@no_camel_case
+class View:
+    def __init__(self, type: str, callback_id: str, title: Text, blocks: List[Block], submit: Optional[Text] = None,
+                 notify_on_close: bool = False):
+        self.type = type
+        self.callback_id = callback_id
+        self.title = title
+        self.blocks = blocks
+        self.submit = submit
+        self.notify_on_close = notify_on_close
+
+    @staticmethod
+    def modal(callback_id: str, title: str, blocks: Iterable[Block], submit: Optional[str] = None,
+              notify_on_close: bool = False) -> 'View':
+        submit = Text.plain(submit) if submit else None
+        return View('modal', callback_id=callback_id, title=Text.plain(title), blocks=list(blocks), submit=submit,
+                    notify_on_close=notify_on_close)
