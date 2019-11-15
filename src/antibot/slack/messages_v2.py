@@ -103,9 +103,14 @@ class Element:
                        initial_date=initial_date)
 
     @staticmethod
-    def text(action_id: str, placeholder: str, initial_value: Optional[str] = None):
-        return Element('plain_text_input', action_id=action_id, placeholder=Text.plain(placeholder),
+    def text(action_id: str, placeholder: Optional[str] = None, initial_value: Optional[str] = None):
+        return Element('plain_text_input', action_id=action_id,
+                       placeholder=Text.plain(placeholder) if placeholder else None,
                        initial_value=initial_value)
+
+    @staticmethod
+    def radio(action_id: str, options: List[Option], initial_option: Optional[Option] = None):
+        return Element('radio_buttons', action_id=action_id, options=options, initial_option=initial_option)
 
 
 @no_camel_case
@@ -113,7 +118,7 @@ class Block:
     def __init__(self, type: str, text: Optional[Text] = None, elements: List[Union[Text, Element]] = None,
                  accessory: Optional[Element] = None, title: Optional[Text] = None, image_url: Optional[str] = None,
                  alt_text: Optional[str] = None, label: Optional[Text] = None, element: Optional[Element] = None,
-                 block_id: Optional[str] = None):
+                 block_id: Optional[str] = None, optional: Optional[bool] = None):
         self.type = type
         self.text = text
         self.elements = elements
@@ -124,6 +129,7 @@ class Block:
         self.label = label
         self.element = element
         self.block_id = block_id
+        self.optional = optional
 
     @staticmethod
     def section(text: str, accessory: Optional[Element] = None) -> 'Block':
@@ -146,8 +152,8 @@ class Block:
         return Block('image', title=Text.plain(title), image_url=url, alt_text=alt_text)
 
     @staticmethod
-    def input(block_id: str, label: str, element: Element) -> 'Block':
-        return Block('input', block_id=block_id, label=Text.plain(label), element=element)
+    def input(block_id: str, label: str, element: Element, optional: bool = False) -> 'Block':
+        return Block('input', block_id=block_id, label=Text.plain(label), element=element, optional=optional)
 
 
 @no_camel_case
