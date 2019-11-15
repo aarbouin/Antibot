@@ -34,7 +34,7 @@ class CallbackAction:
 
 @no_camel_case
 class Container:
-    def __init__(self, message_ts: str):
+    def __init__(self, message_ts: Optional[str] = None):
         self.message_ts = message_ts
 
 
@@ -54,15 +54,16 @@ class BlockAction:
 
 @no_camel_case
 class BlockPayload:
-    def __init__(self, user: CallbackUser, channel: CallbackChannel,
-                 actions: List[BlockAction], response_url: str, trigger_id: str,
-                 container: Container):
+    def __init__(self, user: CallbackUser, actions: List[BlockAction], trigger_id: str,
+                 container: Container, view: Optional[ViewPayload] = None,
+                 channel: Optional[CallbackChannel] = None, response_url: Optional[str] = None):
         self.user = user
         self.channel = channel
         self.actions = actions
         self.response_url = response_url
         self.trigger_id = trigger_id
         self.container = container
+        self.view = view
 
 
 @no_camel_case

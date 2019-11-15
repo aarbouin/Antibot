@@ -54,12 +54,16 @@ class BlockActionRunner:
         for action in message.actions:
             for block_action in self.find_block_action(action.block_id, action.action_id):
                 user = self.users.get_user(message.user.id)
-                channel = Channel(message.channel.id, message.channel.name)
+                channel = Channel(message.channel.id, message.channel.name) if message.channel else None
+                values = message.view.state.values if message.view and message.view.state else None
                 reply = self.endpoints.run(block_action.plugin, block_action.method,
                                            user=user, channel=channel,
                                            action=action, trigger_id=message.trigger_id,
                                            timestamp=message.container.message_ts,
-                                           response_url=message.response_url)
+                                           response_url=message.response_url,
+                                           view_id=message.view.id if message.view else None,
+                                           private_metadata=message.view.private_metadata if message.view else None,
+                                           values=values)
 
                 if isinstance(reply, Message):
                     self.api.respond(message.response_url, reply)
