@@ -151,17 +151,18 @@ class Block:
 @no_camel_case
 class View:
     def __init__(self, type: str, callback_id: str, title: Text, blocks: List[Block], submit: Optional[Text] = None,
-                 notify_on_close: bool = False):
+                 notify_on_close: bool = False, private_metadata: Optional[str] = None):
         self.type = type
         self.callback_id = callback_id
         self.title = title
         self.blocks = blocks
         self.submit = submit
         self.notify_on_close = notify_on_close
+        self.private_metadata = private_metadata
 
     @staticmethod
     def modal(callback_id: str, title: str, blocks: Iterable[Block], submit: Optional[str] = None,
-              notify_on_close: bool = False) -> 'View':
+              notify_on_close: bool = False, private_metadata: Optional[str] = None) -> 'View':
         submit = Text.plain(submit) if submit else None
         return View('modal', callback_id=callback_id, title=Text.plain(title), blocks=list(blocks), submit=submit,
-                    notify_on_close=notify_on_close)
+                    notify_on_close=notify_on_close, private_metadata=private_metadata)

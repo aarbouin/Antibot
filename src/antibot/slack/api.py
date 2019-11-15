@@ -12,6 +12,7 @@ from antibot.model.configuration import Configuration
 from antibot.model.user import User
 from antibot.slack.channel import Channel
 from antibot.slack.message import Message, Dialog, PostMessageReply
+from antibot.slack.messages_v2 import View
 from antibot.slack.upload import File
 from antibot.slack.user import Member
 
@@ -93,4 +94,8 @@ class SlackApi:
         result = self.user_client.files_sharedPublicURL(file=result['file']['id'])
         print(result.data)
         return parse(File, result.data['file'])
+
+    def open_modal(self, trigger_id: str, view: View) -> str:
+        result = self.client.views_open(trigger_id=trigger_id, view=serialize(view))
+        return result['view']['id']
 

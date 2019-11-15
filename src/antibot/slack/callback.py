@@ -98,3 +98,33 @@ class CallbackPayload:
         self.channel = channel
         self.response_url = response_url
         self.actions = actions
+
+
+@no_camel_case
+class StatePayload:
+    def __init__(self, values: dict):
+        self.values = values
+
+
+@no_camel_case
+class ViewPayload:
+    def __init__(self, id: str, callback_id: str, state: Optional[StatePayload] = None,
+                 private_metadata: Optional[str] = None):
+        self.id = id
+        self.callback_id = callback_id
+        self.state = state
+        self.private_metadata = private_metadata
+
+
+@no_camel_case
+class ViewClosedPayload:
+    def __init__(self, user: CallbackUser, view: ViewPayload):
+        self.user = user
+        self.view = view
+
+
+@no_camel_case
+class ViewSubmitPayload:
+    def __init__(self, user: CallbackUser, view: ViewPayload):
+        self.user = user
+        self.view = view
