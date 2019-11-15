@@ -38,14 +38,14 @@ class ActionRunner:
 
         with self.debugger.wrap(json_data):
             if json_data['type'] == 'block_actions':
-                self.block_actions.run_callback(json_data)
+                return self.block_actions.run_callback(json_data)
             elif json_data['type'] == 'dialog_submission':
-                self.dialog_submits.run(json_data)
+                return self.dialog_submits.run(json_data)
             elif json_data['type'] == 'dialog_cancellation':
-                self.dialog_cancels.run(json_data)
+                return self.dialog_cancels.run(json_data)
             elif json_data['type'] == 'view_closed':
-                self.view_closed.run(json_data)
+                return self.view_closed.run(json_data)
             elif json_data['type'] == 'view_submission':
-                self.view_sumbit.run(json_data)
+                return self.view_sumbit.run(json_data)
             else:
-                self.callbacks.run_callback(json_data)
+                return self.callbacks.run_callback(json_data)
