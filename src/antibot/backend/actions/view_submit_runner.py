@@ -1,7 +1,6 @@
-import json
 from typing import Type, Callable, Iterable
 
-from pyckson import parse
+from pyckson import parse, serialize
 from pynject import pynject, singleton
 
 from antibot.backend.constants import VIEW_SUBMIT_ID
@@ -11,6 +10,7 @@ from antibot.model.plugin import AntibotPlugin
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
 from antibot.slack.callback import ViewSubmitPayload
+from antibot.slack.messages_v2 import View
 
 
 class ViewSubmitDescriptor:
@@ -42,7 +42,10 @@ class ViewSubmitRunner:
         message = parse(ViewSubmitPayload, payload)
         for descriptor in self.find_callback(message.view.callback_id):
             user = self.users.get_user(message.user.id)
-            self.endpoints.run(descriptor.plugin, descriptor.method,
-                               user=user, callback_id=message.view.callback_id,
-                               values=message.view.state.values, view_id=message.view.id,
-                               private_metadata=message.view.private_metadata)
+            reply = self.endpoints.run(descriptor.plugin, descriptor.method,
+                                       user=user, callback_id=message.view.callback_id,
+                                       values=message.view.state.values, view_id=message.view.id,
+                                       private_metadata=message.view.private_metadata)
+            if isinstance(reply, View):
+                return {'response_action': 'update',
+                        'view': serialize(reply)}

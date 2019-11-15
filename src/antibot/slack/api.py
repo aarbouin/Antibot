@@ -99,3 +99,10 @@ class SlackApi:
         result = self.client.views_open(trigger_id=trigger_id, view=serialize(view))
         return result['view']['id']
 
+    def push_modal(self, trigger_id: str, view: View) -> str:
+        result = self.client.views_push(trigger_id=trigger_id, view=serialize(view))
+        return result['view']['id']
+
+    def update_view(self, parent_view_id: str, view: View) -> str:
+        result = self.client.views_update(view_id=parent_view_id, view=serialize(view))
+        return result['view']['id']
