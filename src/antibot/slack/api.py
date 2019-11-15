@@ -85,7 +85,7 @@ class SlackApi:
 
     def upload_file(self, channel_id: str, filename: str, title: str, content: bytes):
         result = self.client.files_upload(file=BytesIO(content), filename=filename,
-                                 title=title, channels=channel_id)
+                                          title=title, channels=channel_id)
         print(result.data)
         return parse(File, result.data['file'])
 

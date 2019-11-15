@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import Optional, List, Union, Iterable
 
+from autovalue import autovalue
 from pyckson import no_camel_case
 
 
@@ -25,6 +26,7 @@ class Text:
         return Text('plain_text', text)
 
 
+@autovalue
 @no_camel_case
 class Option:
     def __init__(self, text: Text, value: str):

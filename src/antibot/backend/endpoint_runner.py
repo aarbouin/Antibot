@@ -1,6 +1,7 @@
 from inspect import signature
 from typing import Type, Callable
 
+from pyckson import loads
 from pynject import pynject, Injector
 
 
@@ -15,6 +16,8 @@ class EndpointRunner:
 
         for name, param in signature(method).parameters.items():
             if name in kwargs:
+                if param.annotation != str and type(kwargs[name]) is str:
+                    kwargs[name] = loads(param.annotation, kwargs[name])
                 method_args[name] = kwargs[name]
 
         return method(instance, **method_args)
