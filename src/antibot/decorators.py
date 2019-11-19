@@ -1,3 +1,5 @@
+from functools import wraps
+from threading import Thread
 from typing import Optional
 
 from antibot.backend.constants import CMD_ATTR, JOB_ATTR_DAILY, WS_ATTR, WS_JSON_VALUES, BLOCK_ACTION_OPTIONS, \
@@ -83,3 +85,13 @@ def daily(hour='00:00'):
         return f
 
     return decorator
+
+
+def async_reply(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        t = Thread(target=f, args=args, kwargs=kwargs)
+        t.start()
+        return
+
+    return wrapper
