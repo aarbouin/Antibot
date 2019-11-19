@@ -20,6 +20,6 @@ class File:
         return 'https://files.slack.com/files-pri/{}-{}/{}?pub_secret={}'.format(
             self.team_id,
             self.id,
-            self.name,
+            self.permalink.split('/')[-1],
             self.secret
         )
