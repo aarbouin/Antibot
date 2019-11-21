@@ -5,8 +5,9 @@ from pyckson import no_camel_case
 
 @no_camel_case
 class Profile:
-    def __init__(self, display_name: str, email: Optional[str] = None):
+    def __init__(self, display_name: str, real_name: str, email: Optional[str] = None):
         self.display_name = display_name
+        self.real_name = real_name
         self.email = email
 
 
