@@ -1,9 +1,7 @@
-from functools import wraps
-from threading import Thread
 from typing import Optional
 
 from antibot.backend.constants import CMD_ATTR, JOB_ATTR_DAILY, WS_ATTR, WS_JSON_VALUES, BLOCK_ACTION_OPTIONS, \
-    DIALOG_SUBMIT_ID, DIALOG_CANCEL_ID, CALLBACK_ID_REGEX, VIEW_CLOSED_ID, VIEW_SUBMIT_ID
+    DIALOG_SUBMIT_ID, DIALOG_CANCEL_ID, CALLBACK_ID_REGEX, VIEW_CLOSED_ID, VIEW_SUBMIT_ID, ASYNC_REPLY
 from antibot.backend.descriptor import CommandDescriptor, WsDescriptor, BlockActionOptions
 
 
@@ -88,10 +86,5 @@ def daily(hour='00:00'):
 
 
 def async_reply(f):
-    @wraps(f)
-    def wrapper(*args, **kwargs):
-        t = Thread(target=f, args=args, kwargs=kwargs)
-        t.start()
-        return
-
-    return wrapper
+    setattr(f, ASYNC_REPLY, True)
+    return f
