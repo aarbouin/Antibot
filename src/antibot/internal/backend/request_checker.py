@@ -4,13 +4,13 @@ import logging
 import time
 
 from bottle import BaseRequest, abort
-from pynject import pynject
+from injector import inject
 
-from antibot.model.configuration import Configuration
+from antibot.internal.configuration import Configuration
 
 
-@pynject
 class RequestChecker:
+    @inject
     def __init__(self, configuration: Configuration):
         self.configuration = configuration
 

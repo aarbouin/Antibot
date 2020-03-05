@@ -1,20 +1,20 @@
 from typing import Type
 
 from bottle import request
-from pynject import pynject
+from injector import inject
 
-from antibot.backend.debugger import Debugger
-from antibot.backend.endpoint_runner import EndpointRunner
-from antibot.backend.request_checker import RequestChecker
-from antibot.model.plugin import AntibotPlugin
+from antibot.internal.backend.debugger import Debugger
+from antibot.internal.backend.endpoint_runner import EndpointRunner
+from antibot.internal.backend.request_checker import RequestChecker
+from antibot.internal.slack.channel import Channel
+from antibot.plugin import AntibotPlugin
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
-from antibot.slack.channel import Channel
 from antibot.slack.message import Message
 
 
-@pynject
 class CommandRunner:
+    @inject
     def __init__(self, endpoints: EndpointRunner, users: UsersRepository, checker: RequestChecker,
                  api: SlackApi, debugger: Debugger):
         self.endpoints = endpoints

@@ -2,21 +2,21 @@ from inspect import signature
 from threading import Thread
 from typing import Type, Callable
 
+from injector import inject, Injector
 from pyckson import loads
-from pynject import pynject, Injector
 
-from antibot.backend.constants import ASYNC_REPLY
-from antibot.backend.debugger import Debugger
+from antibot.internal.backend.constants import ASYNC_REPLY
+from antibot.internal.backend.debugger import Debugger
 
 
-@pynject
 class EndpointRunner:
+    @inject
     def __init__(self, injector: Injector, debugger: Debugger):
         self.injector = injector
         self.debugger = debugger
 
     def run(self, plugin: Type, method: Callable, **kwargs):
-        instance = self.injector.get_instance(plugin)
+        instance = self.injector.get(plugin)
         method_args = {}
 
         for name, param in signature(method).parameters.items():

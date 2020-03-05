@@ -3,32 +3,22 @@ from io import BytesIO
 from typing import Iterator
 
 import requests
+from injector import inject, singleton
 from pyckson import parse, serialize, dumps
-from pynject import singleton, pynject
 from requests import HTTPError
 from slack import WebClient
 
-from antibot.model.configuration import Configuration
-from antibot.model.user import User
-from antibot.slack.channel import Channel
-from antibot.slack.message import Message, Dialog, PostMessageReply
-from antibot.slack.messages_v2 import View
-from antibot.slack.upload import File
-from antibot.slack.user import Member
-
-
-@pynject
-class SlackClientProvider:
-    def __init__(self, configuration: Configuration):
-        self.configuration = configuration
-
-    def get(self) -> WebClient:
-        return WebClient(self.configuration.oauth_token)
+from antibot.internal.configuration import Configuration
+from antibot.internal.slack.channel import Channel
+from antibot.internal.slack.upload import File
+from antibot.internal.slack.user import Member
+from antibot.slack.message import Message, PostMessageReply, View
+from antibot.user import User
 
 
 @singleton
-@pynject
 class SlackApi:
+    @inject
     def __init__(self, client: WebClient, configuration: Configuration):
         self.client = client
         self.user_client = WebClient(configuration.user_auth_token)
@@ -80,9 +70,6 @@ class SlackApi:
             print('##### blocks #####')
             print(dumps(message.blocks))
             raise
-
-    def open_dialog(self, trigger_id: str, dialog: Dialog):
-        self.client.dialog_open(dialog=serialize(dialog), trigger_id=trigger_id)
 
     def upload_file(self, channel_id: str, filename: str, title: str, content: bytes):
         result = self.client.files_upload(file=BytesIO(content), filename=filename,

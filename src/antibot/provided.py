@@ -1,18 +1,17 @@
 from datetime import datetime
 from json import dumps
 
-from pynject import pynject
+from injector import inject
 
-from antibot.backend.debugger import Debugger, QueryCatcher
 from antibot.decorators import ws, block_action, command
-from antibot.model.plugin import AntibotPlugin
+from antibot.internal.backend.debugger import Debugger, QueryCatcher
+from antibot.plugin import AntibotPlugin
 from antibot.slack.api import SlackApi
-from antibot.slack.message import Message
-from antibot.slack.messages_v2 import Element
+from antibot.slack.message import Message, Element
 
 
-@pynject
 class BasePlugin(AntibotPlugin):
+    @inject
     def __init__(self):
         super().__init__('Base')
 
@@ -34,8 +33,8 @@ class DismissActionPlugin(AntibotPlugin):
         return Message(delete_original=True)
 
 
-@pynject
 class DebuggerPlugin(AntibotPlugin):
+    @inject
     def __init__(self, debugger: Debugger, api: SlackApi):
         super().__init__('Debug')
         self.debugger = debugger

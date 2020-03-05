@@ -1,12 +1,12 @@
-import os
 import traceback
 from contextlib import contextmanager
 from datetime import datetime
 from json import dumps
 from typing import Optional, Callable
 
-from pynject import pynject, singleton
+from injector import inject, singleton
 
+from antibot.internal.configuration import Configuration
 from antibot.slack.api import SlackApi
 
 
@@ -29,11 +29,12 @@ class QueryCatcher(DebugHook):
         return True
 
 
-@pynject
 @singleton
 class Debugger:
-    def __init__(self, api: SlackApi):
+    @inject
+    def __init__(self, api: SlackApi, configuration: Configuration):
         self.api = api
+        self.configuration = configuration
         self.hooks = []
 
     @contextmanager
@@ -42,7 +43,7 @@ class Debugger:
             self.process_hooks(query)
             yield
         except Exception:
-            if os.environ.get('ENV', 'prod') != 'dev':
+            if self.configuration.prod:
                 date = datetime.now().isoformat()
                 self.api.upload_file('bot',
                                      filename='error-{}-stacktrace.txt'.format(date),

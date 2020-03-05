@@ -1,15 +1,14 @@
+from dataclasses import dataclass
 from inspect import getmembers
 from typing import Iterator, Optional, Callable, Iterable, Any, Tuple
 
-from autovalue import autovalue
-
-from antibot.backend.constants import CMD_ATTR, WS_ATTR
+from antibot.internal.backend.constants import CMD_ATTR, WS_ATTR
 
 
+@dataclass
 class CommandDescriptor:
-    def __init__(self, route, method):
-        self.route = route
-        self.method = method
+    route: str
+    method: Callable
 
 
 def find_commands(cls) -> Iterator[CommandDescriptor]:
@@ -18,11 +17,10 @@ def find_commands(cls) -> Iterator[CommandDescriptor]:
             yield getattr(method, CMD_ATTR)
 
 
-@autovalue
+@dataclass
 class BlockActionOptions:
-    def __init__(self, block_id: Optional[str] = None, action_id: Optional[str] = None):
-        self.block_id = block_id
-        self.action_id = action_id
+    block_id: Optional[str]
+    action_id: Optional[str]
 
 
 def find_method_by_attribute(cls, attr) -> Iterable[Tuple[Callable, Any]]:
@@ -31,11 +29,11 @@ def find_method_by_attribute(cls, attr) -> Iterable[Tuple[Callable, Any]]:
             yield (method, getattr(method, attr))
 
 
+@dataclass
 class WsDescriptor:
-    def __init__(self, route, http_method, method):
-        self.route = route
-        self.http_method = http_method
-        self.method = method
+    route: str
+    http_method: str
+    method: Callable
 
 
 def find_ws(cls) -> Iterator[WsDescriptor]:

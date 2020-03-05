@@ -1,17 +1,17 @@
 from typing import Type
 
 from bottle import request, abort
+from injector import inject, Injector
 from pyckson import serialize
-from pynject import Injector, pynject
 
-from antibot.backend.constants import WS_JSON_VALUES
-from antibot.backend.debugger import Debugger
-from antibot.model.configuration import Configuration
-from antibot.model.plugin import AntibotPlugin
+from antibot.internal.backend.constants import WS_JSON_VALUES
+from antibot.internal.backend.debugger import Debugger
+from antibot.internal.configuration import Configuration
+from antibot.plugin import AntibotPlugin
 
 
-@pynject
 class WsRunner:
+    @inject
     def __init__(self, injector: Injector, configuration: Configuration, debugger: Debugger):
         self.injector = injector
         self.configuration = configuration
@@ -22,9 +22,7 @@ class WsRunner:
         if self.configuration.ws_api_key != request_key:
             abort(401, 'Could not verify api key')
         ip = request.get_header('X-Forwarded-For', request.environ.get('REMOTE_ADDR'))
-        if len(self.configuration.ws_ip_restictions) > 0 and ip not in self.configuration.ws_ip_restictions:
-            abort(401, 'Unauthorized IP')
-        instance = self.injector.get_instance(plugin)
+        instance = self.injector.get(plugin)
 
         with self.debugger.wrap(request.json):
             reply = method(instance, **kwargs)

@@ -1,20 +1,24 @@
+import atexit
 import traceback
 from inspect import getmembers
 from threading import Thread
 from time import sleep
 
 import schedule
-from pynject import Injector, pynject
+from injector import inject, Injector
 
-from antibot.backend.constants import JOB_ATTR_DAILY
-from antibot.backend.plugins import PluginsCollection
+from antibot.internal.backend.constants import JOB_ATTR_DAILY
+from antibot.internal.plugins import PluginsCollection
 
 
 class SchedulerWatch:
+    def __init__(self):
+        self.running = True
+
     def run(self):
-        while True:
+        while self.running:
             schedule.run_pending()
-            sleep(5)
+            sleep(1)
 
 
 def find_daily_jobs(cls):
@@ -24,11 +28,12 @@ def find_daily_jobs(cls):
             yield method, hour
 
 
-@pynject
 class Scheduler:
+    @inject
     def __init__(self, injector: Injector, plugins: PluginsCollection, watch: SchedulerWatch):
         self.plugins = plugins
         self.injector = injector
+        self.watch = watch
         self.watch_thread = Thread(target=watch.run)
 
     def bootstrap(self):
@@ -38,9 +43,16 @@ class Scheduler:
                 schedule.every().day.at(hour).do(self.run, plugin, method)
         self.watch_thread.start()
 
+        def stop():
+            print('stop')
+            self.watch.running = False
+            self.watch_thread.join(1)
+
+        atexit.register(lambda: stop())
+
     def run(self, cls, method):
         try:
-            instance = self.injector.get_instance(cls)
+            instance = self.injector.get(cls)
             method(instance)
         except Exception as e:
             traceback.print_exc()

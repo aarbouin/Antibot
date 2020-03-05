@@ -16,9 +16,9 @@ setup(name='antibot',
       entry_points={
           'console_scripts': ['antibot=antibot.main:run'],
           'antibot': [
-              'antibot=antibot.base:BasePlugin',
-              'dismiss=antibot.base:DismissActionPlugin',
-              'debug=antibot.base:DebuggerPlugin',
+              'antibot=antibot.provided:BasePlugin',
+              'dismiss=antibot.provided:DismissActionPlugin',
+              'debug=antibot.provided:DebuggerPlugin',
           ]
       },
       packages=find_packages(where='src'),
@@ -26,13 +26,11 @@ setup(name='antibot',
       install_requires=[
           'pymongo',
           'requests',
-          'pynject',
+          'injector',
           'pyckson',
           'schedule',
           'slackclient',
-          'jira',
           'arrow',
-          'bottle',
-          'autovalue'
+          'bottle'
       ],
       )

@@ -1,14 +1,14 @@
 from typing import Optional
 
-from pynject import pynject, singleton
+from injector import singleton, inject
 
-from antibot.model.user import User
 from antibot.slack.api import SlackApi
+from antibot.user import User
 
 
-@pynject
 @singleton
 class UsersRepository:
+    @inject
     def __init__(self, api: SlackApi):
         self.api = api
         users = list(self.api.list_users())

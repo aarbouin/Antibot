@@ -1,28 +1,29 @@
+from dataclasses import dataclass
 from typing import Type, Callable, Iterable
 
+from injector import singleton, inject
 from pyckson import parse, serialize
-from pynject import pynject, singleton
 
-from antibot.backend.constants import VIEW_SUBMIT_ID
-from antibot.backend.descriptor import find_method_by_attribute
-from antibot.backend.endpoint_runner import EndpointRunner
-from antibot.model.plugin import AntibotPlugin
+from antibot.internal.backend.constants import VIEW_SUBMIT_ID
+from antibot.internal.backend.descriptor import find_method_by_attribute
+from antibot.internal.backend.endpoint_runner import EndpointRunner
+from antibot.plugin import AntibotPlugin
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
 from antibot.slack.callback import ViewSubmitPayload
-from antibot.slack.messages_v2 import View
+from antibot.slack.message import View
 
 
+@dataclass
 class ViewSubmitDescriptor:
-    def __init__(self, plugin: Type[AntibotPlugin], method: Callable, callback_id: str):
-        self.plugin = plugin
-        self.method = method
-        self.callback_id = callback_id
+    plugin: Type[AntibotPlugin]
+    method: Callable
+    callback_id: str
 
 
-@pynject
 @singleton
 class ViewSubmitRunner:
+    @inject
     def __init__(self, endpoints: EndpointRunner, users: UsersRepository, api: SlackApi):
         self.endpoints = endpoints
         self.users = users

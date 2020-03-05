@@ -1,15 +1,31 @@
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Iterator, Optional
+from uuid import uuid4
 
-from pyckson import parse, serialize
+from injector import inject
+from pyckson import parse, serialize, rename
 from pymongo.database import Database
-from pynject import pynject
 
-from antibot.model.message import SlackMessage
+from antibot.tools import today
 
 
-@pynject
+@rename(id='_id')
+@dataclass
+class SlackMessage:
+    id: str
+    type: str
+    date: datetime
+    timestamp: str
+    channel_id: Optional[str]
+
+    @staticmethod
+    def create_today(type: str, timestamp: str, channel_id: Optional[str] = None) -> 'SlackMessage':
+        return SlackMessage(str(uuid4()), type, today(), timestamp, channel_id)
+
+
 class MessagesRepository:
+    @inject
     def __init__(self, db: Database):
         self.collection = db['messages']
 

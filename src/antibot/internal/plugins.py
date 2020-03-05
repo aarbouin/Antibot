@@ -1,22 +1,27 @@
-from typing import Iterable
+from typing import Iterable, Type
 
 import pkg_resources
-from pynject import Module
+from injector import Module
+
+from antibot.plugin import AntibotPlugin
 
 
-class AntibotPlugin:
-    def __init__(self, name):
-        self.name = name
+class PluginsCollection:
+    def __init__(self, plugins):
+        self.plugins = plugins
+
+    def __iter__(self):
+        return iter(self.plugins)
 
 
-def find_plugins() -> Iterable[AntibotPlugin]:
+def find_plugins() -> Iterable[Type[AntibotPlugin]]:
     for entry_point in pkg_resources.iter_entry_points('antibot'):
         object = entry_point.load()
         if issubclass(object, AntibotPlugin):
             yield object
 
 
-def find_modules() -> Iterable[Module]:
+def find_modules() -> Iterable[Type[Module]]:
     for entry_point in pkg_resources.iter_entry_points('antibot'):
         object = entry_point.load()
         if issubclass(object, Module):
