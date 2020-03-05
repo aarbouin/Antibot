@@ -12,18 +12,16 @@ from antibot.plugin import AntibotPlugin
 
 
 def configuration_provider() -> Configuration:
-    return Configuration(os.environ['VERIFICATION_TOKEN'],
-                         os.environ['SLACK_API_TOKEN'],
-                         os.environ.get('VHOST', 'http://localhost:5001'),
-                         os.environ['SIGNING_SECRET'],
-                         os.environ['WS_API_KEY'],
-                         os.environ['SLACK_USER_TOKEN'],
-                         not os.environ.get('DEV', False))
+    return Configuration(bot_user_oauth_token=os.environ['SLACK_BOT_USER_TOKEN'],
+                         signing_secret=os.environ['SIGNING_SECRET'],
+                         ws_api_key=os.environ['WS_API_KEY'],
+                         vhost=os.environ.get('VHOST', 'http://localhost:5001'),
+                         prod=not os.environ.get('DEV', False))
 
 
 @inject
 def slack_client_provider(configuration: Configuration) -> WebClient:
-    return WebClient(configuration.oauth_token)
+    return WebClient(configuration.bot_user_oauth_token)
 
 
 class AntibotModule(Module):

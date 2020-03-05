@@ -8,7 +8,6 @@ from pyckson import parse, serialize, dumps
 from requests import HTTPError
 from slack import WebClient
 
-from antibot.internal.configuration import Configuration
 from antibot.internal.slack.channel import Channel
 from antibot.internal.slack.upload import File
 from antibot.internal.slack.user import Member
@@ -19,9 +18,8 @@ from antibot.user import User
 @singleton
 class SlackApi:
     @inject
-    def __init__(self, client: WebClient, configuration: Configuration):
+    def __init__(self, client: WebClient):
         self.client = client
-        self.user_client = WebClient(configuration.user_auth_token)
 
     def list_users(self) -> Iterator[User]:
         result = self.client.api_call('users.list')

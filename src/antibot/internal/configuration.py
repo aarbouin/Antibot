@@ -3,10 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Configuration:
-    verification_token: str
-    oauth_token: str
-    vhost: str
+    bot_user_oauth_token: str
     signing_secret: str
     ws_api_key: str
-    user_auth_token: str
+    vhost: str
     prod: bool
