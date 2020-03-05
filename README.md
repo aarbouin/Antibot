@@ -1,66 +1,36 @@
-# How to create a bot plugin
+# Antibot
 
-## Git
+## Introduction
 
-Create a *dedicated root directory* for antibot dev, and associate a python virtualenv to it.
+This is a python framework to create slack bots.
 
-Clone projects `antibot`, `template`, `k8s` and optionally `jirahandler`
+It abstract most of the boilerplate code to interact with slack and encapsulate slack json data in nice native classes.
 
-Install `cookiecutter`
 
-## Serveo
-You should use [serveo](https://serveo.net/) to expose your dev environement to outside.
+## How to run
 
-`ssh -R <name>:80:localhost:5001 serveo.net`
+You need to create a new app on https://api.slack.com/apps.
+You need to activate `interactive components`, `slash commands` provide at least the following permissions to the bot :
+ * users:read
+ * users:read.email
+ * files:write
+ 
+You also need a way for slack to contact you server.
+In development you can use http://localhost.run/ although you will need to reconfigure `interactive components` and `slash commands` regularly.
 
-Adendum : serveo seems to be down currently, you can use [ngrok](https://ngrok.com/) but you have to reconfigure the slack app on each restart (your dns is not stable).
+You also need a virtualenv where you will install `antibot` and all of your plugins.
 
-## Slack
+The following environment variables are mandatory for antibot to run :
+ * SLACK_BOT_USER_TOKEN : can be found under `Bot User OAuth Access Token` in `OAuth & Permissions` page
+ * SIGNING_SECRET : can be found in the `Basic Information` page
+ * WS_API_KEY : is a random secret of you choice to call non-slack related api on your bot
+ * MONGO_URI : an accessible mongo instance
+ * DEV=true while in development
 
-Create an app on https://api.slack.com/apps
 
-Configure the following features :
- * Interactive Components: toggle the feature `on` and use `https://name.serveo.net/action` as url
- * Bot Users: add a new bot user named antibot-<you>
- * OAuth & Permissions: install the app
+## How to create a plugin
 
-## Your plugin
-
-Use `cookiecutter template/` to create your project. Then push it as a new project under `https://scm.mrs.antidot.net/antibot`
-
-## Testing
-
-Create a `env.list` file in the root antibot directory with the following content :
-
-    MONGO_URI=mongodb://localhost:27017/
-    VERIFICATION_TOKEN=<verification-token>
-    SLACK_API_TOKEN=<bot-user-access-token>
-    SIGNING_SECRET=<signing-secret>
-    WS_API_KEY=d77cd9810f6b2189a52c12bd525730e516df81b1
-    WS_IP_RESTRICTIONS=
-    JIRA_URL=https://jira.antidot.net/
-    JIRA_USER=product-bot
-    JIRA_PASSWORD=<jira-password>
-    PPROD_RN_URL=https://doc-interne.antidot.net/
-    PPROD_RN_USER=root@fluidtopics.com
-    PPROD_RN_PASSWORD=
-    PROD_RN_URL=https://doc.antidot.net/
-    PROD_RN_USER=bot@fluidtopics.com
-    PROD_RN_PASSWORD=
-    
-The `<verification-token>` and `<signing-secret>` info are available from your Slack app `Basic Information` screen.
-The `<bot-user-access-token>` info is available from you Slack app `OAuth & Permissions` screen.
-
-You also need an available mongo database running somewhere.
-
-To start the dev environment, go to the `k8s` project directory and launch `./test/run.py`.
-This will run a docker with all python dependancies installed and all your antibot repositories mounted.
-
-## Prod
-
-Check that your plugin is mentionned in the k8s Dockerfile.
-
-Once your gitlab pipeline is successful, launch a k8s pipeline on master.
+Use [cookiecutter](https://github.com/cookiecutter/cookiecutter) on https://github.com/JGiard/Antibot-plugins-template
 
 ## Coding
 
@@ -68,10 +38,8 @@ There is lot of stuff you can do, check the other projects for examples.
 
 Use `@command("/myplugin/route")` to react to slash command (don't forget to create the correspond command in slack).
 
-Always use the block api from `antibot.slack.messages_v2` when creating messages.
+Always use the block api from `antibot.slack.messages` when creating messages.
 
 Use `@block_action(action_id="...")` to react to interactive components on messages.
 
 Use `@ws("/myplugin/route)` to create a raw endpoint.
-
-Use `@jira_hook(project="...")` from `jirahandle` to react to events in jira.
