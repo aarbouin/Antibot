@@ -8,6 +8,8 @@ script:
   - pip install .
   - cd tests && python3 -m pytest
 
+before_deploy:
+  - cd ..
 deploy:
   provider: pypi
   user: JGiard
