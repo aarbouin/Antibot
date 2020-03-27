@@ -34,17 +34,13 @@ class SlackApi:
         return channel
 
     def post_message(self, channel_id: str, message: Message) -> PostMessageReply:
-        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
-        result = self.client.chat_postMessage(channel=channel_id, text=message.text,
-                                              attachments=attachments, blocks=blocks)
+        result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
         return PostMessageReply(result['channel'], result['ts'])
 
     def post_ephemeral(self, channel_id: str, user_id: str, message: Message) -> PostMessageReply:
-        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
-        result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text,
-                                                attachments=attachments, blocks=blocks)
+        result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
         return PostMessageReply(channel_id, result['message_ts'])
 
     def get_permalink(self, channel_id: str, timestamp: str) -> str:
@@ -52,11 +48,9 @@ class SlackApi:
         return result['permalink']
 
     def update_message(self, channel_id: str, timestamp: str, message: Message) -> PostMessageReply:
-        attachments = [serialize(att) for att in message.attachments] if message.attachments is not None else None
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
         result = self.client.chat_update(channel=channel_id, ts=timestamp,
-                                         text=message.text, attachments=attachments,
-                                         blocks=blocks)
+                                         text=message.text, blocks=blocks)
         return PostMessageReply(result['channel'], result['ts'])
 
     def respond(self, response_url: str, message: Message):
