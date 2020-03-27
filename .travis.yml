@@ -1,0 +1,19 @@
+language: python
+python:
+  - "3.7"
+  - "3.8"
+install:
+  - pip install -r requirements.txt
+script:
+  - pip install .
+  - cd tests && python3 -m pytest
+
+deploy:
+  provider: pypi
+  user: JGiard
+  password:
+    secure: hz2YzZsIkM5t8FDU5FRBxr0f1OPD6p/HSwUB96Ew0XHne7Jl3m9JrenhtX8bZWT8xnuJjOg6PrSoj7u44BOq0tGZitzlvW6cRcwgxY91o7rOI+zQ07O4Lx/cIPuyngNxz/PxyKa3aB29OU3RmIW88CxRcxu9YEUp1rCs/58hM0dm6kOEizwKKfHNBMBwNiNyIGRBQA7BKUWHI5J1R0tdq0bHpgS5w7bBngQyUmcDg8a7cKDB8SzprRoX8xp0s6Pgf4Jev61TPJdpoIuig/vvzAyfrQ0BOiA/S7L2wFNsAt5UFJSFNBPezV7rc6qWqnOl/gvrbCdQean+onOS3sjAn5gMlLp70LvthadBIdO15GLh3eruIlGppqKMwKgsqON7wVo5E2HqXsKndD8pBsPcc88W2Rq+14ofHn5TX3v6olKZjkESJsMrpssjv6C0KAoH1wl16Hyn7qZZsIyInQNky/Egsb0WSPa356LoCdhP9nXzRD/KyTNFvA3/yRe/P9YfmdKA8YkKbupKTbLmA1JVulOmjBQxsZppKISEpy/gkzDr62V3auHjif2g8wbzbyQYGrMutNFaeec6xwvrtuU/MY8iMKRIbZMaH7iOIFa60BAnEjJpPbZOZkDhe2l1KT+NJOLBcpSrz6PBtSFYcWaFFk+RjsTcO9z0bErtXnoEssw=
+  on:
+    tags: true
+  distributions: "sdist bdist_wheel"
+  skip_existing: true
