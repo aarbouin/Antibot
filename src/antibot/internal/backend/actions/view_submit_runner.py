@@ -11,7 +11,7 @@ from antibot.plugin import AntibotPlugin
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
 from antibot.slack.callback import ViewSubmitPayload
-from antibot.slack.message import View
+from antibot.slack.message import View, ViewError
 
 
 @dataclass
@@ -50,3 +50,8 @@ class ViewSubmitRunner:
             if isinstance(reply, View):
                 return {'response_action': 'update',
                         'view': serialize(reply)}
+            if isinstance(reply, ViewError):
+                return {'response_action': 'errors',
+                        'errors': {
+                            reply.block_id: reply.message
+                        }}

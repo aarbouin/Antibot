@@ -189,7 +189,7 @@ class View:
     callback_id: str
     title: Text
     blocks: List[Block]
-    sumbit: Optional[Text]
+    submit: Optional[Text]
     private_metadata: Optional[str]
     notify_on_close: Optional[bool] = False
 
@@ -199,6 +199,12 @@ class View:
         submit = Text.plain(submit) if submit else None
         return View('modal', callback_id=callback_id, title=Text.plain(title), blocks=list(blocks), submit=submit,
                     notify_on_close=notify_on_close, private_metadata=private_metadata)
+
+
+@dataclass
+class ViewError:
+    block_id: str
+    message: str
 
 
 @no_camel_case
