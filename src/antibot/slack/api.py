@@ -7,6 +7,7 @@ from injector import inject, singleton
 from pyckson import parse, serialize, dumps
 from requests import HTTPError
 from slack import WebClient
+from slack.errors import SlackApiError
 
 from antibot.internal.slack.channel import Channel
 from antibot.internal.slack.upload import File
@@ -35,17 +36,30 @@ class SlackApi:
 
     def post_message(self, channel_id: str, message: Message) -> PostMessageReply:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
-        result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
-        return PostMessageReply(result['channel'], result['ts'])
+        try:
+            result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
+            return PostMessageReply(result['channel'], result['ts'])
+        except SlackApiError as e:
+            if e.response['error'] == 'not_in_channel':
+                self.client.conversations_join(channel=channel_id)
+                result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
+                return PostMessageReply(result['channel'], result['ts'])
+            else:
+                raise e
 
     def post_ephemeral(self, channel_id: str, user_id: str, message: Message) -> PostMessageReply:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
-        result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
-        return PostMessageReply(channel_id, result['message_ts'])
-
-    def get_permalink(self, channel_id: str, timestamp: str) -> str:
-        result = self.client.chat_getPermalink(channel=channel_id, message_ts=timestamp)
-        return result['permalink']
+        try:
+            result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
+            return PostMessageReply(result['channel'], result['ts'])
+        except SlackApiError as e:
+            if e.response['error'] == 'not_in_channel':
+                self.client.conversations_join(channel=channel_id)
+                result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text,
+                                                        blocks=blocks)
+                return PostMessageReply(result['channel'], result['ts'])
+            else:
+                raise e
 
     def update_message(self, channel_id: str, timestamp: str, message: Message) -> PostMessageReply:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
