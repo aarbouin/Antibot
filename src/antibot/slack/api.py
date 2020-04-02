@@ -38,12 +38,12 @@ class SlackApi:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
         try:
             result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
-            return PostMessageReply(result['channel'], result['ts'])
+            return PostMessageReply(result['channel'], result['message_ts'])
         except SlackApiError as e:
             if e.response['error'] == 'not_in_channel':
                 self.client.conversations_join(channel=channel_id)
                 result = self.client.chat_postMessage(channel=channel_id, text=message.text, blocks=blocks)
-                return PostMessageReply(result['channel'], result['ts'])
+                return PostMessageReply(result['channel'], result['message_ts'])
             else:
                 raise e
 
@@ -51,13 +51,14 @@ class SlackApi:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
         try:
             result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
-            return PostMessageReply(result['channel'], result['ts'])
+            print(result)
+            return PostMessageReply(result['channel'], result['message_ts'])
         except SlackApiError as e:
             if e.response['error'] == 'not_in_channel':
                 self.client.conversations_join(channel=channel_id)
                 result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text,
                                                         blocks=blocks)
-                return PostMessageReply(result['channel'], result['ts'])
+                return PostMessageReply(result['channel'], result['message_ts'])
             else:
                 raise e
 
@@ -65,7 +66,7 @@ class SlackApi:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
         result = self.client.chat_update(channel=channel_id, ts=timestamp,
                                          text=message.text, blocks=blocks)
-        return PostMessageReply(result['channel'], result['ts'])
+        return PostMessageReply(result['channel'], result['message_ts'])
 
     def respond(self, response_url: str, message: Message):
         reply = requests.post(response_url, json=serialize(message))
