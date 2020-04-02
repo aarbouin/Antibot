@@ -1,4 +1,5 @@
 import logging
+from argparse import ArgumentParser
 
 import bottle as bottle
 from injector import Injector, inject
@@ -16,21 +17,26 @@ class Main:
         self.plugins = plugins
         self.installer = installer
 
-    def run(self):
+    def run(self, reload: bool = False):
         for plugin in self.plugins:
             self.installer.install_plugin(plugin)
-        self.scheduler.bootstrap()
-        bottle.run(port=5001, host='0.0.0.0', debug=True)
+        if not reload:
+            self.scheduler.bootstrap()
+        bottle.run(port=5001, host='0.0.0.0', debug=True, reloader=True)
 
 
 def run():
+    parser = ArgumentParser()
+    parser.add_argument('-r', '--reload', action='store_true')
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.INFO)
 
     module = AntibotModule(list(find_plugins()), list(find_modules()))
     injector = Injector(module)
 
     main = injector.get(Main)
-    main.run()
+    main.run(reload=args.reload)
 
 
 if __name__ == '__main__':
