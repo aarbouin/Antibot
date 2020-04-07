@@ -22,12 +22,12 @@ class Main:
             self.installer.install_plugin(plugin)
         if not reload:
             self.scheduler.bootstrap()
-        bottle.run(port=5001, host='0.0.0.0', debug=True, reloader=True)
+        bottle.run(port=5001, host='0.0.0.0', debug=True, reloader=reload)
 
 
 def run():
     parser = ArgumentParser()
-    parser.add_argument('-r', '--reload', action='store_true')
+    parser.add_argument('-r', '--reload', action='store_true', default=False)
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
