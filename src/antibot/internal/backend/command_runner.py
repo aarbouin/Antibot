@@ -31,7 +31,7 @@ class CommandRunner:
         response_url = request.forms['response_url']
         params = request.forms['text']
 
-        with self.debugger.wrap({'params': params}):
+        with self.debugger.wrap({'params': params, 'command': request.forms['command'], 'user': user.display_name}):
             reply = self.endpoints.run(plugin, method, user=user, channel=channel, response_url=response_url,
                                        params=params)
 
