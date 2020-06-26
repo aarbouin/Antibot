@@ -97,12 +97,14 @@ class Element:
     confirm: Optional[Confirm] = None
     placeholder: Optional[Text] = None
     initial_value: Optional[str] = None
+    url: Optional[str] = None
 
     @staticmethod
     def button(action_id: str, text: str, style: Optional[ActionStyle] = None,
-               value: Optional[str] = None, confirm: Optional[Confirm] = None) -> 'Element':
+               value: Optional[str] = None, confirm: Optional[Confirm] = None,
+               url: Optional[str] = None) -> 'Element':
         return Element('button', action_id=action_id, text=Text.plain(text),
-                       style=style, value=value, confirm=confirm)
+                       style=style, value=value, confirm=confirm, url=url)
 
     @staticmethod
     def select(action_id: str, placeholder: str, options: List[Option],
