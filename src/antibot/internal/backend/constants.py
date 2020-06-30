@@ -9,4 +9,5 @@ WS_JSON_VALUES = '__ws_json'
 VIEW_CLOSED_ID = '__view_closed'
 VIEW_SUBMIT_ID = '__view_submit'
 ASYNC_REPLY = '__async_reply'
+NO_AUTH = '__no_auth'
 

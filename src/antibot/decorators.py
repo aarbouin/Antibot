@@ -1,7 +1,7 @@
 from typing import Optional
 
 from antibot.internal.backend.constants import CMD_ATTR, JOB_ATTR_DAILY, WS_ATTR, WS_JSON_VALUES, BLOCK_ACTION_OPTIONS, \
-    VIEW_CLOSED_ID, VIEW_SUBMIT_ID, ASYNC_REPLY
+    VIEW_CLOSED_ID, VIEW_SUBMIT_ID, ASYNC_REPLY, NO_AUTH
 from antibot.internal.backend.descriptor import CommandDescriptor, WsDescriptor, BlockActionOptions
 
 
@@ -63,4 +63,9 @@ def daily(hour='00:00'):
 
 def async_reply(f):
     setattr(f, ASYNC_REPLY, True)
+    return f
+
+
+def noauth(f):
+    setattr(f, NO_AUTH, True)
     return f
