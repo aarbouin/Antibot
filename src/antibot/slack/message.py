@@ -52,6 +52,8 @@ class Option:
     @staticmethod
     def of(value: str, text: Optional[str] = None) -> 'Option':
         text = text or value
+        if len(text) > 75:
+            text = text[:72] + '...'
         return Option(Text.plain(text), value)
 
 
