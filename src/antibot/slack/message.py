@@ -16,7 +16,6 @@ class ActionType(Enum):
 
 
 class ActionStyle(Enum):
-    default = 'default'
     primary = 'primary'
     danger = 'danger'
 
