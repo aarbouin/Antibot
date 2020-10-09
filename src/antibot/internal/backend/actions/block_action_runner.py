@@ -1,6 +1,6 @@
 import re
 from dataclasses import dataclass
-from typing import Type, Callable, Iterable
+from typing import Type, Callable, Iterable, Dict
 
 from injector import singleton, inject
 from pyckson import parse
@@ -12,7 +12,7 @@ from antibot.internal.slack.channel import Channel
 from antibot.plugin import AntibotPlugin
 from antibot.repository.users import UsersRepository
 from antibot.slack.api import SlackApi
-from antibot.slack.callback import BlockPayload
+from antibot.slack.callback import BlockPayload, BlockAction
 from antibot.slack.message import Message
 
 
@@ -50,6 +50,7 @@ class BlockActionRunner:
 
     def run_callback(self, payload: dict):
         message = parse(BlockPayload, payload)
+        state = self.build_state(message.state.copy()) if message.state else {}
         for action in message.actions:
             for block_action in self.find_block_action(action.block_id, action.action_id):
                 user = self.users.get_user(message.user.id)
@@ -62,7 +63,18 @@ class BlockActionRunner:
                                            response_url=message.response_url,
                                            view_id=message.view.id if message.view else None,
                                            private_metadata=message.view.private_metadata if message.view else None,
-                                           values=values)
+                                           values=values, state=state)
 
                 if isinstance(reply, Message):
                     self.api.respond(message.response_url, reply)
+
+    def build_state(self, state: dict) -> Dict[str, BlockAction]:
+        if 'values' not in state:
+            return {}
+        result = {}
+        for block_id, block_data in state['values'].items():
+            for action_id, action_data in block_data.items():
+                action_data['block_id'] = block_id
+                action_data['action_id'] = action_id
+                result[action_id] = parse(BlockAction, action_data)
+        return result

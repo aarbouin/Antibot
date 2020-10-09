@@ -76,6 +76,7 @@ class BlockPayload:
     view: Optional[ViewPayload]
     channel: Optional[CallbackChannel]
     response_url: Optional[str]
+    state: Optional[dict]
 
 
 @no_camel_case
