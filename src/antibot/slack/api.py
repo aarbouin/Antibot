@@ -51,13 +51,13 @@ class SlackApi:
         try:
             result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
             print(result)
-            return PostMessageReply(result['channel'], result['ts'])
+            return PostMessageReply(result['channel'], result['message_ts'])
         except SlackApiError as e:
             if e.response['error'] == 'not_in_channel':
                 self.client.conversations_join(channel=channel_id)
                 result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text,
                                                         blocks=blocks)
-                return PostMessageReply(result['channel'], result['ts'])
+                return PostMessageReply(result['channel'], result['message_ts'])
             else:
                 raise e
 
