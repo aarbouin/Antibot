@@ -1,4 +1,5 @@
-from typing import Optional
+from operator import itemgetter
+from typing import Optional, List, Iterable
 
 from injector import singleton, inject
 
@@ -20,3 +21,19 @@ class UsersRepository:
 
     def get_by_email(self, email: str) -> Optional[User]:
         return self.users_by_mail.get(email)
+
+    def search_user(self, search: str) -> List[User]:
+        search = search.lower()
+        matches = []
+        for user in self.users_by_id.values():
+            for name in user.all_names:
+                if search in name:
+                    matches.append((user, len(name) - len(search)))
+
+        matches.sort(key=itemgetter(1))
+        results = []
+        for match in matches:
+            if match[0] not in results:
+                results.append(match[0])
+        print(results)
+        return results

@@ -10,6 +10,8 @@ class Profile:
     display_name: str
     real_name: str
     email: Optional[str]
+    real_name_normalized: str
+    display_name_normalized: str
 
 
 @no_camel_case
@@ -17,3 +19,4 @@ class Profile:
 class Member:
     id: str
     profile: Profile
+    name: str

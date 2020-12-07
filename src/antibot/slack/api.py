@@ -26,7 +26,10 @@ class SlackApi:
         for member in result['members']:
             member = parse(Member, member)
             name = member.profile.display_name or member.profile.real_name
-            yield User(member.id, name, member.profile.email)
+            all_names = [member.name, member.profile.display_name, member.profile.real_name,
+                         member.profile.real_name_normalized, member.profile.display_name_normalized]
+            all_names = list(map(str.lower, all_names))
+            yield User(member.id, name, member.profile.email, all_names)
 
     def get_channel(self, channel_id) -> Channel:
         result = self.client.channels_info(channel=channel_id)
