@@ -32,7 +32,7 @@ class SlackApi:
             yield User(member.id, name, member.profile.email, all_names)
 
     def get_channel(self, channel_id) -> Channel:
-        result = self.client.channels_info(channel=channel_id)
+        result = self.client.conversations_info(channel=channel_id)
         channel = parse(Channel, result['channel'])
         return channel
 
