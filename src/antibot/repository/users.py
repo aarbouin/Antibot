@@ -35,5 +35,4 @@ class UsersRepository:
         for match in matches:
             if match[0] not in results:
                 results.append(match[0])
-        print(results)
         return results

@@ -53,7 +53,6 @@ class SlackApi:
         blocks = [serialize(block) for block in message.blocks] if message.blocks is not None else None
         try:
             result = self.client.chat_postEphemeral(channel=channel_id, user=user_id, text=message.text, blocks=blocks)
-            print(result)
             return PostMessageReply(result['channel'], result['message_ts'])
         except SlackApiError as e:
             if e.response['error'] == 'not_in_channel':
@@ -83,13 +82,11 @@ class SlackApi:
     def upload_file(self, channel_id: str, filename: str, title: str, content: bytes):
         result = self.client.files_upload(file=BytesIO(content), filename=filename,
                                           title=title, channels=channel_id)
-        print(result.data)
         return parse(File, result.data['file'])
 
     def upload_and_share(self, content: bytes, filename) -> File:
         result = self.user_client.files_upload(file=BytesIO(content), filename=filename)
         result = self.user_client.files_sharedPublicURL(file=result['file']['id'])
-        print(result.data)
         return parse(File, result.data['file'])
 
     def open_modal(self, trigger_id: str, view: View) -> str:
