@@ -1,6 +1,6 @@
 import logging
 from io import BytesIO
-from typing import Iterator
+from typing import Iterator, List
 
 import requests
 from antibot.internal.slack.channel import Channel
@@ -84,9 +84,11 @@ class SlackApi:
                                           title=title, channels=channel_id)
         return parse(File, result.data['file'])
 
-    def upload_and_share(self, content: bytes, filename) -> File:
-        result = self.client.files_upload(file=BytesIO(content), filename=filename)
-        result = self.client.files_sharedPublicURL(file=result['file']['id'])
+    def upload_and_share(self, content: bytes, filename: str, title: str,
+                         content_type: str, channels: List[str]) -> File:
+        result = self.client.files_upload(file=BytesIO(content), filename=filename,
+                                          title=title, content_type=content_type,
+                                          channels=','.join(channels))
         return parse(File, result.data['file'])
 
     def open_modal(self, trigger_id: str, view: View) -> str:
