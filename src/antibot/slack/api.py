@@ -85,8 +85,8 @@ class SlackApi:
         return parse(File, result.data['file'])
 
     def upload_and_share(self, content: bytes, filename) -> File:
-        result = self.user_client.files_upload(file=BytesIO(content), filename=filename)
-        result = self.user_client.files_sharedPublicURL(file=result['file']['id'])
+        result = self.client.files_upload(file=BytesIO(content), filename=filename)
+        result = self.client.files_sharedPublicURL(file=result['file']['id'])
         return parse(File, result.data['file'])
 
     def open_modal(self, trigger_id: str, view: View) -> str:
