@@ -1,7 +1,7 @@
 import os
 from typing import List, Type
 
-from injector import Module, Binder, singleton, inject
+from injector import Module, Binder, singleton, inject, NoScope
 from pymongo.database import Database
 from pymongo.mongo_client import MongoClient
 from slack import WebClient
@@ -38,7 +38,7 @@ class AntibotModule(Module):
         binder.bind(WebClient, to=slack_client_provider)
         binder.bind(PluginsCollection, to=PluginsCollection(self.plugins))
 
-        binder.bind(Database, to=MongoClient(os.environ['MONGO_URI'])['antibot'])
+        binder.bind(Database, to=MongoClient(os.environ['MONGO_URI'])['antibot'], scope=NoScope)
 
         for module in self.submodules:
             binder.install(module())
